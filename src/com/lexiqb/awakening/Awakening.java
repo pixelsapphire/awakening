@@ -16,6 +16,6 @@ public class Awakening extends Game {
     @Override
     protected void init() {
         getContext().setupWindow(1280, 720);
-        getContext().getWindow().setScene(new FirstScene());
+        getContext().getWindow().setScene(new Lobby());
     }
 }

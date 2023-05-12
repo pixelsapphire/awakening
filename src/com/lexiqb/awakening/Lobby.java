@@ -2,7 +2,7 @@ package com.lexiqb.awakening;
 
 import com.rubynaxela.kyanite.game.Scene;
 
-public class FirstScene extends Scene {
+public class Lobby extends Scene {
 
     @Override
     protected void init() {
