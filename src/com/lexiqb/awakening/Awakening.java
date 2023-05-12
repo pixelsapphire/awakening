@@ -1,7 +1,6 @@
 package com.lexiqb.awakening;
 
 import com.rubynaxela.kyanite.game.Game;
-import com.rubynaxela.kyanite.window.Window;
 
 public class Awakening extends Game {
 
