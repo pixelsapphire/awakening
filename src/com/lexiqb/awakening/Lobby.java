@@ -20,5 +20,24 @@ public class Lobby extends Scene {
     @Override
     protected void loop() {
 
+        // Moving objects
+//        for (final Drawable obj : getContext().getWindow().getScene()) {
+//            if (obj instanceof final MapObject gameObject) {
+//                gameObject.setPosition(Vec2.subtract(gameObject.getPositionOnMap(), mapOffset));
+//            }
+//            if (obj instanceof final GameText text) {
+//                text.setPosition(Vec2.subtract(text.getPositionOnMap(), mapOffset));
+//            }
+//            if (obj instanceof final MapBackground back) {
+//                float backgroundOffsetX, backgroundOffsetY;
+//                if (getMapSize().x > window.getSize().x) {
+//                    backgroundOffsetX = (back.mainBody.getSize().x - window.getSize().x) / (getMapSize().x - window.getSize().x);
+//                } else backgroundOffsetX = (back.mainBody.getSize().x - window.getSize().x) / getMapSize().x;
+//                if (getMapSize().y > window.getSize().y) {
+//                    backgroundOffsetY = (back.mainBody.getSize().y - window.getSize().y) / (getMapSize().y - window.getSize().y);
+//                } else backgroundOffsetY = (back.mainBody.getSize().y - window.getSize().y) / getMapSize().y;
+//                back.setPosition(Vec2.multiply(Vec2.subtract(back.getPositionOnMap(), Vec2.f(backgroundOffsetX, backgroundOffsetY)), getMapOffset()));
+//            }
+//        }
     }
 }
