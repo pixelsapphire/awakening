@@ -1,4 +1,4 @@
-package com.lexiqb.awakening.entities;
+package com.lexiqb.awakening.world;
 
 import com.lexiqb.awakening.GameObject;
 
