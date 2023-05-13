@@ -12,17 +12,17 @@ import com.rubynaxela.kyanite.math.Vector2i;
 import com.rubynaxela.kyanite.window.Window;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class World extends Scene {
+public class World extends Scene {
 
     private final Vector2i size;
     private final Window window;
     private Player player;
 
-    protected World(Vector2i size, @NotNull Texture background) {
+    public World(Vector2i size, @NotNull Texture background) {
         this(size.x, size.y, background);
     }
 
-    protected World(int width, int height, @NotNull Texture background) {
+    public World(int width, int height, @NotNull Texture background) {
         size = Vec2.i(width, height);
         window = getContext().getWindow();
         setOrderingPolicy(OrderingPolicy.Y_BASED);
@@ -61,6 +61,10 @@ public abstract class World extends Scene {
         player.update(getDeltaTime());
 
         updateOrder();
+    }
+
+    @Override
+    protected void init() {
     }
 
     public IntRect getBounds() {

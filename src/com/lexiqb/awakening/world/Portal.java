@@ -13,20 +13,20 @@ public class Portal extends GameObject implements AnimatedEntity {
 
     private final RectangleShape entrance;
 
-    public Portal(Color color) {
+    public Portal(Color color, boolean altTexture) {
 
-        final var gateTexture = GameContext.getInstance().getAssetsBundle().<Texture>get("texture.world.gate");
+        final var gateTexture = GameContext.getInstance().getAssetsBundle().<Texture>get("texture.world.gate" + (altTexture ? "_alt" : ""));
         final var entranceTexture = GameContext.getInstance().getAssetsBundle().<AnimatedTexture>get("texture.world.portal");
 
         setSize(Vec2.multiply(gateTexture.getSize(), 2));
         setOrigin(getSize().x / 2, getSize().y * 0.85f);
-        setTexture(GameContext.getInstance().getAssetsBundle().<Texture>get("texture.world.gate"));
+        setTexture(gateTexture);
 
         entrance = new RectangleShape(Vec2.multiply(entranceTexture.getSize(), 2));
         entrance.setSize(64, 104);
         entrance.setOrigin(getSize().x / 2, getSize().y);
         entrance.setFillColor(color);
-        entrance.setTexture(GameContext.getInstance().getAssetsBundle().<AnimatedTexture>get("texture.world.portal"));
+        entrance.setTexture(entranceTexture);
     }
 
     @Override
