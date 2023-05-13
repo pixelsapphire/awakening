@@ -93,6 +93,8 @@ public class World extends Scene {
 
         stream().filter(o->o instanceof Entity).forEach(e->((Entity) e).update(getDeltaTime()));
 
+        succ();
+
         getContext().getWindow().<GameplayHUD>getHUD().setStamina(player.getStaminaPercentage());
         getContext().getWindow().<GameplayHUD>getHUD().setNoise(dangerLevel / criticalLevel);
 
@@ -108,6 +110,27 @@ public class World extends Scene {
         for (var s : shrensors) {
             float distSqr = (MathUtils.pow((long) (s.getPosition().x - position.x), 2) + MathUtils.pow((long) (s.getPosition().y - position.y), 2)) / 10000f;
             s.disturb(convertTodB(convertFromdB(volume) / (distSqr * dissipationFactor)));
+        }
+    }
+
+    private void succ() {
+        boolean allSafe = slimes.size() == 0;
+        for (var s : slimes) {
+            if (!s.inPortal) {
+                for (var p : stream().filter(o -> o instanceof Portal).toList()) {
+                    if (p instanceof Portal) {
+                        if (s.getGlobalBounds().intersects(((Portal) p).getGlobalBounds())) {
+                            s.portal = (Portal)p;
+                            s.inPortal = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                assert s.portal != null;
+                // TODO animation that succ
+            }
         }
     }
 

@@ -31,6 +31,8 @@ public class Slime extends Entity {
     private Direction facing = Direction.NORTH;
     private Motion motion = Motion.IDLE;
     private boolean onGround = true;
+    public boolean inPortal = false;
+    public Portal portal = null;
 
     public Slime(@NotNull SizeClass sizeClass) {
 
