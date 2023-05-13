@@ -1,6 +1,7 @@
 package com.lexiqb.awakening;
 
 import com.lexiqb.awakening.entities.Player;
+import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.Game;
 import com.rubynaxela.kyanite.game.assets.AssetsBundle;
 import com.rubynaxela.kyanite.graphics.AnimatedTexture;
@@ -20,6 +21,10 @@ public class Awakening extends Game {
     protected void preInit() {
         final AssetsBundle assets = getContext().getAssetsBundle();
 
+        assets.register("texture.ui.health", new Texture("assets/ui/health.png"));
+        assets.register("texture.ui.stamina", new Texture("assets/ui/stamina.png"));
+        assets.register("texture.ui.noise", new Texture("assets/ui/noise.png"));
+
         assets.register("texture.world.gate", new Texture("assets/gate.png"));
 
         assets.register("texture.entity.player", new TextureAtlas("assets/slime_atlas.png"));
@@ -35,6 +40,7 @@ public class Awakening extends Game {
         getContext().setupWindow(1280, 720, "Awakening of the Rarely Observed Big Unidentified Sus Thing");
         final var player = new Player();
         getContext().putResource("entity.player", new Player());
+        getContext().getWindow().setHUD(new GameplayHUD());
         final var lobby = new Lobby();
         lobby.attachPlayer(player);
         getContext().getWindow().setScene(lobby);
