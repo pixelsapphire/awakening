@@ -20,6 +20,7 @@ public class Slime extends Entity {
     private Direction facing = Direction.SOUTH;
     private Motion motion = Motion.IDLE;
     private boolean onGround = true;
+    protected boolean restricted = true;
 
     public Slime(Size size) {
         movementSpeed = size.movementSpeed;
@@ -40,15 +41,21 @@ public class Slime extends Entity {
         keepInWorldBounds(deltaTime);
     }
 
+    protected void resetMovementTime() {
+        if (movementTime < loopLength * loopTimes[4] || movementTime > loopLength * loopTimes[9])
+            movementTime = 0f;
+        motion = Motion.IDLE;
+    }
+
     protected void movement(@NotNull Time deltaTime) {
         final var direction = getDirection();
         int animationIndex = getAnimationFrame();
         float modifier = 1.0f;
 
-        // If requested movement or animation loop is unfinished, add time to finish animation
-        if (direction != Direction.NULL || movementTime > 0)
+        // If requested and allowed movement or animation loop is unfinished, add time to finish animation
+        if ((direction != Direction.NULL && !restricted) || movementTime > 0)
             movementTime += deltaTime.asSeconds();
-        if (direction != Direction.NULL) {
+        if (direction != Direction.NULL && !restricted) {
             if (movementTime >= 0.75f * loopLength)
                 movementTime -= 0.75f * loopLength;
         }
@@ -63,26 +70,26 @@ public class Slime extends Entity {
                 onGround = false;
         }
 
-        // Resetting the time of animation
-        if (direction == Direction.NULL && animationIndex == 2 && (movementTime >= loopLength * loopTimes[8] || movementTime < loopLength * loopTimes[4])) {
-            movementTime = 0;
-            motion = Motion.IDLE;
-        }
-
-        if (animationIndex > 2) {
-            if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) motion = Motion.SNEAK;
-            else if (Keyboard.isKeyPressed(Keyboard.Key.LCONTROL)) motion = Motion.SPRINT;
-            else motion = Motion.REGULAR;
+        if (animationIndex <= 2) {
+            if (direction != Direction.NULL) {
+                facing = direction;
+                if (!restricted) {
+                    if (Keyboard.isKeyPressed(Keyboard.Key.LCONTROL)) motion = Motion.SPRINT;
+                    else motion = Motion.REGULAR;
+                }
+            }
+            // Resetting the time of animation
+            if ((direction == Direction.NULL || restricted) && animationIndex == 2) resetMovementTime();
+            if (direction != Direction.NULL && restricted) motion = Motion.IDLE;
+            setVelocity(Vector2f.zero());
+        } else {
             modifier = motion.speedModifier;
             setVelocity(Vec2.multiply(facing.vector, movementSpeed * modifier));
-        } else {
-            if (direction != Direction.NULL)
-                facing = direction;
-            setVelocity(Vector2f.zero());
         }
 
         // Sneaking
-        setScale(1.0f, motion.yScale);
+        if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) setScale(1.0f, 0.75f);
+        setScale(1.0f);
 
         // Setting texture
         Direction facingNow = switch (direction) {
@@ -134,16 +141,14 @@ public class Slime extends Entity {
         SNEAK(0.5f, 0.75f),
         REGULAR(1.0f, 1.0f),
         SPRINT(2.0f, 1.0f);
-        final float speedModifier, yScale;
+        final float speedModifier;
 
         Motion(float speedModifier, float yScale) {
             this.speedModifier = speedModifier;
-            this.yScale = yScale;
         }
     }
 
     public enum Size {
-
         SMOL_GUY(48, 80.0f, 0.8f),
         PRETTY_AVERAGE(64, 120.0f, 1.2f),
         BIG_BOI(96, 160.0f, 1.6f),
