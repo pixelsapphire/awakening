@@ -9,9 +9,9 @@ import com.rubynaxela.kyanite.math.Vec2;
 public class Portal extends MapObject {
 
     public Portal(Color color) {
-        setSize(32, 62);
+        setSize(64, 104);
         setOrigin(Vec2.divide(getSize(), 2));
         setFillColor(color);
-        setTexture(GameContext.getInstance().getAssetsBundle().<AnimatedTexture>get("portal"));
+        setTexture(GameContext.getInstance().getAssetsBundle().<AnimatedTexture>get("texture.world.portal"));
     }
 }
