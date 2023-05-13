@@ -1,6 +1,7 @@
 package com.lexiqb.awakening.world;
 
 import com.lexiqb.awakening.entities.Player;
+import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.Scene;
 import com.rubynaxela.kyanite.graphics.ConstView;
 import com.rubynaxela.kyanite.graphics.RectangleShape;
@@ -17,6 +18,7 @@ public class World extends Scene {
     private final Vector2i size;
     private final Window window;
     private Player player;
+    private Sensor[] sensors;
 
     public World(Vector2i size, @NotNull Texture background) {
         this(size.x, size.y, background);
@@ -60,6 +62,8 @@ public class World extends Scene {
 
         player.update(getDeltaTime());
 
+        getContext().getWindow().<GameplayHUD>getHUD().setStamina(player.getStaminaPercentage());
+
         updateOrder();
     }
 
@@ -69,5 +73,9 @@ public class World extends Scene {
 
     public IntRect getBounds() {
         return new IntRect(0, 0, size.x, size.y);
+    }
+
+    public void makeNoise() {
+        // TODO calculate strength of noise, alert sensors
     }
 }

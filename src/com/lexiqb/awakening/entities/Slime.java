@@ -11,9 +11,6 @@ import com.rubynaxela.kyanite.math.Vec2;
 import com.rubynaxela.kyanite.math.Vector2f;
 import com.rubynaxela.kyanite.util.Time;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.stream.Stream;
 
 public class Slime extends Entity {
 
@@ -23,6 +20,8 @@ public class Slime extends Entity {
     private final float loopLength = 1.2f;
     private float movementTime = 0;
     private Direction facing = Direction.SOUTH;
+    private Motion motion = Motion.IDLE;
+    private boolean onGround = true;
 
     public Slime() {
         setSize(64, 64);
@@ -31,14 +30,12 @@ public class Slime extends Entity {
         setOrigin(getSize().x / 2f, getSize().y);
     }
 
-    private static int facingId(Direction facing) {
-        return facing.ordinal() / 2;
+    protected enum Motion {
+        IDLE, SNEAK, REGULAR, SPRINT
     }
 
-    @Override
-    public void update(@NotNull Time deltaTime) {
-        movement(deltaTime);
-        keepInWorldBounds(deltaTime);
+    private static int facingId(Direction facing) {
+        return facing.ordinal() / 2;
     }
 
     protected Direction getDirection() {
@@ -46,9 +43,38 @@ public class Slime extends Entity {
         return Direction.NULL;
     }
 
+    protected Motion getMotion() {
+        return motion;
+    }
+
+    protected void land() {
+        // TODO play a S P L A T sound :D
+    }
+
+    protected int getAnimationFrame() {
+        if ((movementTime >= loopLength * loopTimes[0] && movementTime < loopLength * loopTimes[1]) ||
+                (movementTime >= loopLength * loopTimes[2] && movementTime < loopLength * loopTimes[3]) ||
+                (movementTime >= loopLength * loopTimes[8] && movementTime < loopLength * loopTimes[9]) ||
+                (movementTime >= loopLength * loopTimes[10] && movementTime < loopLength * loopTimes[11])) {
+            return 1;
+        }
+        if ((movementTime >= loopLength * loopTimes[1] && movementTime < loopLength * loopTimes[2]) ||
+                (movementTime >= loopLength * loopTimes[9] && movementTime < loopLength * loopTimes[10])) {
+            return 0;
+        }
+        if ((movementTime >= loopLength * loopTimes[4] && movementTime < loopLength * loopTimes[5]) ||
+                (movementTime >= loopLength * loopTimes[6] && movementTime < loopLength * loopTimes[7])) {
+            return 3;
+        }
+        if ((movementTime >= loopLength * loopTimes[5] && movementTime < loopLength * loopTimes[6])) {
+            return 4;
+        }
+        return 2;
+    }
+
     protected void movement(@NotNull Time deltaTime) {
         final var direction = getDirection();
-        int animationIndex = 2;
+        int animationIndex = getAnimationFrame();
         float modifier = 1.0f;
 
         // If requested movement or animation loop is unfinished, add time to finish animation
@@ -58,33 +84,34 @@ public class Slime extends Entity {
             if (movementTime >= 0.75f * loopLength)
                 movementTime -= 0.75f * loopLength;
         }
-        if ((movementTime >= loopLength * loopTimes[0] && movementTime < loopLength * loopTimes[1]) ||
-            (movementTime >= loopLength * loopTimes[2] && movementTime < loopLength * loopTimes[3]) ||
-            (movementTime >= loopLength * loopTimes[8] && movementTime < loopLength * loopTimes[9]) ||
-            (movementTime >= loopLength * loopTimes[10] && movementTime < loopLength * loopTimes[11])) {
-            animationIndex = 1;
+        if (animationIndex == 2) {
+            if (!onGround) {
+                onGround = true;
+                land();
+            }
         }
-        if ((movementTime >= loopLength * loopTimes[1] && movementTime < loopLength * loopTimes[2]) ||
-            (movementTime >= loopLength * loopTimes[9] && movementTime < loopLength * loopTimes[10])) {
-            animationIndex = 0;
-        }
-        if ((movementTime >= loopLength * loopTimes[4] && movementTime < loopLength * loopTimes[5]) ||
-            (movementTime >= loopLength * loopTimes[6] && movementTime < loopLength * loopTimes[7])) {
-            animationIndex = 3;
-        }
-        if ((movementTime >= loopLength * loopTimes[5] && movementTime < loopLength * loopTimes[6])) {
-            animationIndex = 4;
+        if (animationIndex == 3) {
+            if (onGround)
+                onGround = false;
         }
 
         // Resetting the time of animation
-        if (direction == Direction.NULL && animationIndex == 2 && (movementTime >= loopLength * loopTimes[8] || movementTime < loopLength * loopTimes[4]))
+        if (direction == Direction.NULL && animationIndex == 2 && (movementTime >= loopLength * loopTimes[8] || movementTime < loopLength * loopTimes[4])) {
             movementTime = 0;
+            motion = Motion.IDLE;
+        }
 
         if (animationIndex > 2) {
-            if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT))
+            motion = Motion.REGULAR;
+            if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) {
                 modifier = 0.5f;
-            else if (Keyboard.isKeyPressed(Keyboard.Key.LCONTROL)) modifier = 2.0f;
-                setScale(1.0f);
+                motion = Motion.SNEAK;
+            }
+            else if (Keyboard.isKeyPressed(Keyboard.Key.LCONTROL)) {
+                modifier = 2.0f;
+                motion = Motion.SPRINT;
+            }
+//                setScale(1.0f);
             setVelocity(Vec2.multiply(facing.vector, movementSpeed * modifier));
         }
         else {
@@ -108,5 +135,11 @@ public class Slime extends Entity {
             default -> facing;
         };
         setTexture(animations[animationIndex][facingId(facingNow)]);
+    }
+
+    @Override
+    public void update(@NotNull Time deltaTime) {
+        movement(deltaTime);
+        keepInWorldBounds(deltaTime);
     }
 }

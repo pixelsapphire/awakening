@@ -44,15 +44,15 @@ public class GameplayHUD extends HUD {
         add(icon, bar);
     }
 
-    void setHealth(float percentage) {
-        healthBar.setSize(128 * MathUtils.clamp(percentage, 0f, 1f), 16);
+    public void setHealth(float percentage) {
+        healthBar.setSize(128 * MathUtils.clamp(percentage, 6/128f, 1f), 16);
     }
 
-    void setStamina(float percentage) {
-        staminaBar.setSize(128 * MathUtils.clamp(percentage, 0f, 1f), 16);
+    public void setStamina(float percentage) {
+        staminaBar.setSize(128 * MathUtils.clamp(percentage, 6/128f, 1f), 16);
     }
 
-    void setNoise(float percentage) {
-        noiseBar.setSize(128 * MathUtils.clamp(percentage, 0f, 1f), 16);
+    public void setNoise(float percentage) {
+        noiseBar.setSize(128 * MathUtils.clamp(percentage, 6/128f, 1f), 16);
     }
 }
