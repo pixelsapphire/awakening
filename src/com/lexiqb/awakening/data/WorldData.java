@@ -4,12 +4,13 @@ import com.lexiqb.awakening.world.Portal;
 import com.lexiqb.awakening.world.World;
 import com.rubynaxela.kyanite.game.GameContext;
 import com.rubynaxela.kyanite.graphics.Color;
+import com.rubynaxela.kyanite.util.AssetId;
 
 import java.util.List;
 
 public class WorldData {
 
-    public String background;
+    public @AssetId String background;
     public int width, height;
 
     public List<PortalData> portals;

@@ -6,11 +6,12 @@ import com.rubynaxela.kyanite.util.Time;
 import org.jetbrains.annotations.NotNull;
 
 public class Player extends Slime {
+
     private static final float maxStamina = 100, staminaRegen = 15, sUsSprint = 30, sUsRegular = 20, sUsSneak = 5;
     private float stamina = maxStamina;
 
     public Player() {
-        super(Size.RARELY_OBSERVED_BIG_UNIDENTIFIED_SUS_THING);
+        super(SizeClass.PRETTY_AVERAGE);
     }
 
     @Override

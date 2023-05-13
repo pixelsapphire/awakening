@@ -20,7 +20,7 @@ public class World extends Scene {
     private Player player;
     private Sensor[] sensors;
 
-    public World(Vector2i size, @NotNull Texture background) {
+    public World(@NotNull Vector2i size, @NotNull Texture background) {
         this(size.x, size.y, background);
     }
 

@@ -6,6 +6,7 @@ import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.Game;
 import com.rubynaxela.kyanite.game.assets.AssetsBundle;
 import com.rubynaxela.kyanite.game.assets.DataAsset;
+import com.rubynaxela.kyanite.game.assets.Sound;
 import com.rubynaxela.kyanite.graphics.AnimatedTexture;
 import com.rubynaxela.kyanite.graphics.ConstTexture;
 import com.rubynaxela.kyanite.graphics.Texture;
@@ -23,6 +24,8 @@ public class Awakening extends Game {
     protected void preInit() {
         final AssetsBundle assets = getContext().getAssetsBundle();
 
+        // ================================[ Textures ]================================
+
         assets.register("texture.ui.health", new Texture("assets/textures/ui/health.png"));
         assets.register("texture.ui.stamina", new Texture("assets/textures/ui/stamina.png"));
         assets.register("texture.ui.noise", new Texture("assets/textures/ui/noise.png"));
@@ -38,6 +41,15 @@ public class Awakening extends Game {
                         new AnimatedTexture(Stream.of(0, 1, 2, 3, 4, 5, 6, 7, 8)
                                                   .map(i -> new Texture("assets/textures/world/portal/stage" + i + ".png"))
                                                   .toArray(ConstTexture[]::new), 1 / 9f));
+
+        // ================================[ Sounds ]================================
+
+        getContext().getAudioHandler().createChannel("player");
+        getContext().getAudioHandler().setChannelVolume("player", 100.0f);
+        assets.register("sound.entity.slime.takeoff", new Sound("assets/sounds/entity/slime/takeoff.ogg"));
+        assets.register("sound.entity.slime.land", new Sound("assets/sounds/entity/slime/splat.ogg"));
+
+        // ================================[ Worlds ]================================
 
         assets.register("data.world.lobby", new DataAsset("assets/worlds/lobby.json"));
     }

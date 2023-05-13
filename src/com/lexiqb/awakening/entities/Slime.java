@@ -1,6 +1,9 @@
 package com.lexiqb.awakening.entities;
 
 import com.rubynaxela.kyanite.game.GameContext;
+import com.rubynaxela.kyanite.game.assets.AssetsBundle;
+import com.rubynaxela.kyanite.game.assets.AudioHandler;
+import com.rubynaxela.kyanite.game.assets.Sound;
 import com.rubynaxela.kyanite.graphics.Colors;
 import com.rubynaxela.kyanite.graphics.Texture;
 import com.rubynaxela.kyanite.graphics.TextureAtlas;
@@ -13,18 +16,24 @@ import org.jetbrains.annotations.NotNull;
 
 public class Slime extends Entity {
 
+    private static final AssetsBundle assets = GameContext.getInstance().getAssetsBundle();
+    private static final AudioHandler audioHandler = GameContext.getInstance().getAudioHandler();
+    private static final Sound takeoffSound = assets.get("sound.entity.slime.takeoff");
+    private static final Sound landingSound = assets.get("sound.entity.slime.land");
     private final float movementSpeed, loopLength;
-    private final Texture[][] animations = GameContext.getInstance().getAssetsBundle().<TextureAtlas>get("texture.entity.player").getMatrix(32, 32, 5, 4);
+    private final Texture[][] animations = assets.<TextureAtlas>get("texture.entity.player").getMatrix(32, 32, 5, 4);
     private final float[] loopTimes = {0.05f, 0.1f, 0.2f, 0.25f, 0.3f, 0.4f, 0.65f, 0.75f, 0.8f, 0.85f, 0.95f, 1f};
+    private final SizeClass sizeClass;
     private float movementTime = 0;
     private Direction facing = Direction.SOUTH;
     private Motion motion = Motion.IDLE;
     private boolean onGround = true;
 
-    public Slime(Size size) {
-        movementSpeed = size.movementSpeed;
-        loopLength = size.loopLength;
-        setSize(size.dimension, size.dimension);
+    public Slime(SizeClass sizeClass) {
+        this.sizeClass = sizeClass;
+        movementSpeed = sizeClass.movementSpeed;
+        loopLength = sizeClass.loopLength;
+        setSize(sizeClass.size, sizeClass.size);
         setFillColor(Colors.MEDIUM_PURPLE);
         setPosition(200, 200);
         setOrigin(getSize().x / 2f, getSize().y);
@@ -59,8 +68,10 @@ public class Slime extends Entity {
             }
         }
         if (animationIndex == 3) {
-            if (onGround)
+            if (onGround) {
                 onGround = false;
+                takeoff();
+            }
         }
 
         // Resetting the time of animation
@@ -85,7 +96,7 @@ public class Slime extends Entity {
         setScale(1.0f, motion.yScale);
 
         // Setting texture
-        Direction facingNow = switch (direction) {
+        final Direction facingNow = switch (direction) {
             case NORTH -> Direction.NORTH;
             case SOUTH -> Direction.SOUTH;
             case WEST, NORTH_WEST, SOUTH_WEST -> Direction.WEST;
@@ -122,10 +133,15 @@ public class Slime extends Entity {
     }
 
     protected void land() {
-        // TODO play a S P L A T sound :D
+        audioHandler.playSound(landingSound, "player", 100.0f, sizeClass.soundPitch, false);
+        // TODO partiiiiicleeeesssssss :DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
     }
 
-    private static int facingId(Direction facing) {
+    protected void takeoff() {
+        audioHandler.playSound(takeoffSound, "player", 100.0f, sizeClass.soundPitch, false);
+    }
+
+    private static int facingId(@NotNull Direction facing) {
         return facing.ordinal() / 2;
     }
 
@@ -142,19 +158,20 @@ public class Slime extends Entity {
         }
     }
 
-    public enum Size {
+    public enum SizeClass {
 
-        SMOL_GUY(48, 80.0f, 0.8f),
-        PRETTY_AVERAGE(64, 120.0f, 1.2f),
-        BIG_BOI(96, 160.0f, 1.6f),
-        RARELY_OBSERVED_BIG_UNIDENTIFIED_SUS_THING(380, 240.0f, 3.2f);
+        SMOL_GUY(48, 80.0f, 0.8f, 1.5f),
+        PRETTY_AVERAGE(64, 120.0f, 1.2f, 1.0f),
+        BIG_BOI(96, 160.0f, 1.6f, 0.75f),
+        RARELY_OBSERVED_BIG_UNIDENTIFIED_SUS_THING(380, 240.0f, 3.2f, 0.5f);
 
-        final float dimension, movementSpeed, loopLength;
+        final float size, movementSpeed, loopLength, soundPitch;
 
-        Size(float dimension, float movementSpeed, float loopLength) {
-            this.dimension = dimension;
+        SizeClass(float size, float movementSpeed, float loopLength, float soundPitch) {
+            this.size = size;
             this.movementSpeed = movementSpeed;
             this.loopLength = loopLength;
+            this.soundPitch = soundPitch;
         }
     }
 }
