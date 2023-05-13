@@ -24,13 +24,14 @@ public class Slime extends Entity {
     private final Texture[][] animations = assets.<TextureAtlas>get("texture.entity.player").getMatrix(32, 32, 5, 4);
     private final float[] loopTimes = {0.05f, 0.1f, 0.2f, 0.25f, 0.3f, 0.4f, 0.65f, 0.75f, 0.8f, 0.85f, 0.95f, 1f};
     private final SizeClass sizeClass;
+    protected boolean restricted = true;
     private float movementTime = 0;
     private Direction facing = Direction.SOUTH;
     private Motion motion = Motion.IDLE;
     private boolean onGround = true;
-    protected boolean restricted = true;
 
-    public Slime(SizeClass sizeClass) {
+    public Slime(@NotNull SizeClass sizeClass) {
+
         this.sizeClass = sizeClass;
         movementSpeed = sizeClass.movementSpeed;
         loopLength = sizeClass.loopLength;
@@ -48,16 +49,6 @@ public class Slime extends Entity {
     public void update(@NotNull Time deltaTime) {
         movement(deltaTime);
         keepInWorldBounds(deltaTime);
-    }
-
-    public void awaken() {
-        restricted = false;
-    }
-
-    protected void resetMovementTime() {
-        if (movementTime < loopLength * loopTimes[4] || movementTime > loopLength * loopTimes[9])
-            movementTime = 0f;
-        motion = Motion.IDLE;
     }
 
     protected void movement(@NotNull Time deltaTime) {
@@ -149,8 +140,18 @@ public class Slime extends Entity {
         audioHandler.playSound(takeoffSound, "player", 100.0f, sizeClass.soundPitch, false);
     }
 
+    protected void resetMovementTime() {
+        if (movementTime < loopLength * loopTimes[4] || movementTime > loopLength * loopTimes[9])
+            movementTime = 0f;
+        motion = Motion.IDLE;
+    }
+
     private static int facingId(@NotNull Direction facing) {
         return facing.ordinal() / 2;
+    }
+
+    public void awaken() {
+        restricted = false;
     }
 
     protected enum Motion {

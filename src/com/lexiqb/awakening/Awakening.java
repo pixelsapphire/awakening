@@ -11,6 +11,7 @@ import com.rubynaxela.kyanite.graphics.AnimatedTexture;
 import com.rubynaxela.kyanite.graphics.ConstTexture;
 import com.rubynaxela.kyanite.graphics.Texture;
 import com.rubynaxela.kyanite.graphics.TextureAtlas;
+import com.rubynaxela.kyanite.util.Utils;
 
 import java.util.stream.Stream;
 
@@ -26,6 +27,8 @@ public class Awakening extends Game {
 
         // ================================[ Textures ]================================
 
+        assets.register("texture.entity.player", new TextureAtlas("assets/textures/entity/slime_atlas.png"));
+
         assets.register("texture.ui.health", new Texture("assets/textures/ui/health.png"));
         assets.register("texture.ui.stamina", new Texture("assets/textures/ui/stamina.png"));
         assets.register("texture.ui.noise", new Texture("assets/textures/ui/noise.png"));
@@ -35,11 +38,13 @@ public class Awakening extends Game {
 
         assets.register("texture.world.lobby.background", new Texture("assets/textures/world/touch_sum_grass.png"));
 
-        assets.register("texture.entity.player", new TextureAtlas("assets/textures/entity/slime_atlas.png"));
-
         assets.register("texture.world.portal",
                         new AnimatedTexture(Stream.of(0, 1, 2, 3, 4, 5, 6, 7, 8)
                                                   .map(i -> new Texture("assets/textures/world/portal/stage" + i + ".png"))
+                                                  .toArray(ConstTexture[]::new), 1 / 9f));
+        assets.register("texture.world.sensor",
+                        new AnimatedTexture(Stream.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+                                                  .map(i -> new Texture("assets/textures/world/sensor/stage" + String.format("%02d", i) + ".png"))
                                                   .toArray(ConstTexture[]::new), 1 / 9f));
 
         // ================================[ Sounds ]================================
@@ -47,7 +52,7 @@ public class Awakening extends Game {
         getContext().getAudioHandler().createChannel("player");
         getContext().getAudioHandler().setChannelVolume("player", 100.0f);
         assets.register("sound.entity.slime.takeoff", new Sound("assets/sounds/entity/slime/takeoff.ogg"));
-        assets.register("sound.entity.slime.land", new Sound("assets/sounds/entity/slime/splat.ogg"));
+        assets.register("sound.entity.slime.land", Utils.lambdaInit(new Sound("assets/sounds/entity/slime/splat.ogg")));
 
         // ================================[ Worlds ]================================
 
