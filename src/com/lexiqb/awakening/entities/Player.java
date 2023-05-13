@@ -41,8 +41,11 @@ public class Player extends Slime {
     @Override
     protected void land() {
         super.land();
+        float multiplier = 1.0f;
+        if (getMotion() == Motion.SPRINT) multiplier = 2.5f;
+        if (getMotion() == Motion.SNEAK) multiplier = 0.4f;
         assert getWorld() != null;
-        getWorld().makeNoise();
+        getWorld().makeNoise(getPosition(), (float) (50 + 10 * (multiplier + Math.log10(Math.pow(getSize().x / 32.0f, 3)))));
     }
 
     public float getStaminaPercentage() {
