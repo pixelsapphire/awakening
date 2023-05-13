@@ -11,7 +11,7 @@ public class Player extends Slime {
     private float stamina = maxStamina;
 
     public Player() {
-        super(SizeClass.PRETTY_AVERAGE);
+        super(SizeClass.SMOL_GUY);
     }
 
     @Override
