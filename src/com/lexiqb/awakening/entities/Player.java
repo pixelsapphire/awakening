@@ -25,6 +25,8 @@ public class Player extends Slime {
         }
         stamina += (staminaRegen - staminaUsage) * deltaTime.asSeconds();
         if (stamina > maxStamina) stamina = maxStamina;
+        if (stamina < 0 && !restricted) restricted = true;
+        if (stamina >= 0.125 * maxStamina && restricted) restricted = false;
     }
 
     @Override
@@ -42,6 +44,4 @@ public class Player extends Slime {
     public float getStaminaPercentage() {
         return Math.max(stamina / maxStamina, 0);
     }
-
-    // TODO override movement, so that player can't jump (or sprint) when out of stamina
 }
