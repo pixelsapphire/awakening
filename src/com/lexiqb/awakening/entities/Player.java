@@ -13,6 +13,7 @@ public class Player extends Slime {
 
     public Player() {
         super(SizeClass.PRETTY_AVERAGE);
+        awaken();
     }
 
     @Override

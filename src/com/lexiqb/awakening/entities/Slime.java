@@ -1,5 +1,6 @@
 package com.lexiqb.awakening.entities;
 
+import com.lexiqb.awakening.world.Portal;
 import com.rubynaxela.kyanite.game.GameContext;
 import com.rubynaxela.kyanite.game.assets.AssetsBundle;
 import com.rubynaxela.kyanite.game.assets.AudioHandler;
@@ -9,6 +10,7 @@ import com.rubynaxela.kyanite.graphics.Texture;
 import com.rubynaxela.kyanite.graphics.TextureAtlas;
 import com.rubynaxela.kyanite.input.Keyboard;
 import com.rubynaxela.kyanite.math.Direction;
+import com.rubynaxela.kyanite.math.MathUtils;
 import com.rubynaxela.kyanite.math.Vec2;
 import com.rubynaxela.kyanite.math.Vector2f;
 import com.rubynaxela.kyanite.util.Time;
@@ -26,7 +28,7 @@ public class Slime extends Entity {
     private final SizeClass sizeClass;
     protected boolean restricted = true;
     private float movementTime = 0;
-    private Direction facing = Direction.SOUTH;
+    private Direction facing = Direction.NORTH;
     private Motion motion = Motion.IDLE;
     private boolean onGround = true;
 
@@ -54,7 +56,6 @@ public class Slime extends Entity {
     protected void movement(@NotNull Time deltaTime) {
         final var direction = getDirection();
         int animationIndex = getAnimationFrame();
-        float modifier = 1.0f;
 
         // If requested and allowed movement or animation loop is unfinished, add time to finish animation
         if ((direction != Direction.NULL && !restricted) || (movementTime > 0 && !(movementTime >= loopLength * loopTimes[3] && movementTime < loopLength * loopTimes[4])))
@@ -90,8 +91,7 @@ public class Slime extends Entity {
             if (direction != Direction.NULL && restricted) motion = Motion.IDLE;
             setVelocity(Vector2f.zero());
         } else {
-            modifier = motion.speedModifier;
-            setVelocity(Vec2.multiply(facing.vector, movementSpeed * modifier));
+            setVelocity(Vec2.multiply(facing.vector, movementSpeed * motion.speedModifier));
         }
 
         // Setting texture
@@ -106,8 +106,59 @@ public class Slime extends Entity {
     }
 
     protected Direction getDirection() {
-        // TODO make little slimes follow player
+        if (!restricted) {
+            assert getWorld() != null;
+            boolean foundPortal = false;
+            Vector2f destination = Vector2f.zero();
+            for (var p : getWorld().stream().filter(o -> o instanceof Portal).toList()) {
+                if (p instanceof final Portal portal) {
+                    if (MathUtils.distance(portal.getPosition(), getPosition()) < 200) {
+                        destination = portal.getPosition();
+                        foundPortal = true;
+                        break;
+                    }
+                }
+            }
+            if (foundPortal) return determineDirection(destination, 0.225f * loopLength * movementSpeed);
+            else return determineDirection(getWorld().getPlayer().getPosition(), 100);
+        }
         return Direction.NULL;
+    }
+
+    private Direction determineDirection(Vector2f destination, float proximity) {
+        int deltaX = 0, deltaY = 0;
+        var delta = Vec2.subtract(destination, getPosition());
+        if (Math.abs(delta.x) > proximity) {
+            if (delta.x > 0) deltaX = 1;
+            else deltaX = -1;
+        }
+        if (Math.abs(delta.y) > proximity) {
+            if (delta.y > 0) deltaY = 1;
+            else deltaY = -1;
+        }
+        switch (deltaY) {
+            case 1 -> {
+                switch (deltaX) {
+                    case 1 -> { return Direction.SOUTH_EAST; }
+                    case -1 -> { return Direction.SOUTH_WEST; }
+                    default -> { return Direction.SOUTH; }
+                }
+            }
+            case -1 -> {
+                switch (deltaX) {
+                    case 1 -> { return Direction.NORTH_EAST; }
+                    case -1 -> { return Direction.NORTH_WEST; }
+                    default -> { return Direction.NORTH; }
+                }
+            }
+            default -> {
+                switch (deltaX) {
+                    case 1 -> { return Direction.EAST; }
+                    case -1 -> { return Direction.WEST; }
+                    default -> { return Direction.NULL; }
+                }
+            }
+        }
     }
 
     protected int getAnimationFrame() {
@@ -152,16 +203,17 @@ public class Slime extends Entity {
 
     public void awaken() {
         restricted = false;
+        facing = Direction.SOUTH;
     }
 
     protected enum Motion {
-        IDLE(0.0f, 1.0f),
-        SNEAK(0.5f, 0.75f),
-        REGULAR(1.0f, 1.0f),
-        SPRINT(2.0f, 1.0f);
+        IDLE(0.0f),
+        SNEAK(0.5f),
+        REGULAR(1.0f),
+        SPRINT(2.0f);
         final float speedModifier;
 
-        Motion(float speedModifier, float yScale) {
+        Motion(float speedModifier) {
             this.speedModifier = speedModifier;
         }
     }
@@ -171,7 +223,7 @@ public class Slime extends Entity {
         SMOL_GUY(48, 80.0f, 0.8f, 1.5f),
         PRETTY_AVERAGE(64, 120.0f, 1.2f, 1.0f),
         BIG_BOI(96, 160.0f, 1.6f, 0.75f),
-        RARELY_OBSERVED_BIG_UNIDENTIFIED_SUS_THING(380, 240.0f, 3.2f, 0.5f);
+        RARELY_OBSERVED_BIG_UNIDENTIFIED_SUSPICIOUS_THING(380, 240.0f, 3.2f, 0.5f);
 
         final float size, movementSpeed, loopLength, soundPitch;
 

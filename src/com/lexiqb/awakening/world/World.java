@@ -6,10 +6,7 @@ import com.lexiqb.awakening.entities.Shrensor;
 import com.lexiqb.awakening.entities.Slime;
 import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.Scene;
-import com.rubynaxela.kyanite.graphics.ConstView;
-import com.rubynaxela.kyanite.graphics.RectangleShape;
-import com.rubynaxela.kyanite.graphics.Texture;
-import com.rubynaxela.kyanite.graphics.View;
+import com.rubynaxela.kyanite.graphics.*;
 import com.rubynaxela.kyanite.math.*;
 import com.rubynaxela.kyanite.util.Unit;
 import com.rubynaxela.kyanite.window.Window;
@@ -73,7 +70,13 @@ public class World extends Scene {
         testS.setPosition(600, 200);
         testS.assignWorld(this);
         shrensors.add(testS);
-        add(testS);
+        Slime slims = new Slime(Slime.SizeClass.SMOL_GUY);
+        slims.setFillColor(Colors.CADET_BLUE);
+        slims.setPosition(1600, 1400);
+        slims.assignWorld(this);
+        slimes.add(slims);
+        add(testS, slims);
+
         updateOrder();
     }
 
