@@ -2,7 +2,7 @@ package com.lexiqb.awakening.world;
 
 import com.lexiqb.awakening.entities.Entity;
 import com.lexiqb.awakening.entities.Player;
-import com.lexiqb.awakening.entities.Sensor;
+import com.lexiqb.awakening.entities.Shrensor;
 import com.lexiqb.awakening.entities.Slime;
 import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.Scene;
@@ -23,7 +23,7 @@ public class World extends Scene {
     private final Window window;
     private Player player;
     private ArrayList<Slime> slimes = new ArrayList<>();
-    private ArrayList<Sensor> sensors = new ArrayList<>();
+    private ArrayList<Shrensor> shrensors = new ArrayList<>();
     private final float dissipationFactor = 1f, criticalLevel = 25f;
     private float dangerLevel = 0f;
 
@@ -69,10 +69,10 @@ public class World extends Scene {
 
     @Override
     protected void init() {
-        Sensor testS = new Sensor();
+        Shrensor testS = new Shrensor();
         testS.setPosition(600, 200);
         testS.assignWorld(this);
-        sensors.add(testS);
+        shrensors.add(testS);
         add(testS);
         updateOrder();
     }
@@ -102,7 +102,7 @@ public class World extends Scene {
 
     public void makeNoise(Vector2f position, float volume) {
         // TODO calculate strength of noise, alert sensors
-        for (var s : sensors) {
+        for (var s : shrensors) {
             float distSqr = (MathUtils.pow((long) (s.getPosition().x - position.x), 2) + MathUtils.pow((long) (s.getPosition().y - position.y), 2)) / 10000f;
             s.disturb(convertTodB(convertFromdB(volume) / (distSqr * dissipationFactor)));
         }

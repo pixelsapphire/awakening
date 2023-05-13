@@ -50,9 +50,10 @@ public class Awakening extends Game {
         // ================================[ Sounds ]================================
 
         getContext().getAudioHandler().createChannel("player");
-        getContext().getAudioHandler().setChannelVolume("player", 100.0f);
+        getContext().getAudioHandler().createChannel("environment");
         assets.register("sound.entity.slime.takeoff", new Sound("assets/sounds/entity/slime/takeoff.ogg"));
         assets.register("sound.entity.slime.land", Utils.lambdaInit(new Sound("assets/sounds/entity/slime/splat.ogg")));
+        assets.register("sound.world.shrensor.disturb", new Sound("assets/sounds/world/shrensor.ogg"));
 
         // ================================[ Worlds ]================================
 
