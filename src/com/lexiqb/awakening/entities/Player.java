@@ -11,7 +11,7 @@ public class Player extends Slime {
     private float stamina = maxStamina;
 
     public Player() {
-        super(SizeClass.SMOL_GUY);
+        super(SizeClass.PRETTY_AVERAGE);
     }
 
     @Override
@@ -26,7 +26,11 @@ public class Player extends Slime {
         stamina += (staminaRegen - staminaUsage) * deltaTime.asSeconds();
         if (stamina > maxStamina) stamina = maxStamina;
         if (stamina < 0 && !restricted) restricted = true;
-        if (stamina >= 0.125 * maxStamina && restricted) restricted = false;
+        if (stamina >= 10 && restricted) restricted = false;
+
+        // Sneaking
+        if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) setScale(1.0f, 0.75f);
+        else setScale(1.0f);
     }
 
     @Override
@@ -37,8 +41,11 @@ public class Player extends Slime {
     @Override
     protected void land() {
         super.land();
+        float multiplier = 1.0f;
+        if (getMotion() == Motion.SPRINT) multiplier = 2.5f;
+        if (getMotion() == Motion.SNEAK) multiplier = 0.4f;
         assert getWorld() != null;
-        getWorld().makeNoise();
+        getWorld().makeNoise(getPosition(), (float) (50 + 10 * (multiplier + Math.log10(Math.pow(getSize().x / 32.0f, 3)))));
     }
 
     public float getStaminaPercentage() {

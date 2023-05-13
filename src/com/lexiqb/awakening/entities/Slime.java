@@ -62,7 +62,7 @@ public class Slime extends Entity {
         float modifier = 1.0f;
 
         // If requested and allowed movement or animation loop is unfinished, add time to finish animation
-        if ((direction != Direction.NULL && !restricted) || movementTime > 0)
+        if ((direction != Direction.NULL && !restricted) || (movementTime > 0 && !(movementTime >= loopLength * loopTimes[3] && movementTime < loopLength * loopTimes[4])))
             movementTime += deltaTime.asSeconds();
         if (direction != Direction.NULL && !restricted) {
             if (movementTime >= 0.75f * loopLength)
@@ -86,6 +86,7 @@ public class Slime extends Entity {
                 facing = direction;
                 if (!restricted) {
                     if (Keyboard.isKeyPressed(Keyboard.Key.LCONTROL)) motion = Motion.SPRINT;
+                    else if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) motion = Motion.SNEAK;
                     else motion = Motion.REGULAR;
                 }
             }
@@ -97,10 +98,6 @@ public class Slime extends Entity {
             modifier = motion.speedModifier;
             setVelocity(Vec2.multiply(facing.vector, movementSpeed * modifier));
         }
-
-        // Sneaking
-        if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) setScale(1.0f, 0.75f);
-        setScale(1.0f);
 
         // Setting texture
         final Direction facingNow = switch (direction) {
