@@ -22,7 +22,7 @@ public class Sensor extends Entity {
     }
 
     public void disturb(float volume) {
-        if (volume > 50) {
+        if (volume > 65) {
             var converted = volume / 20f - 2f;
             if (!disturbed) {
                 disturbed = true;
@@ -30,7 +30,7 @@ public class Sensor extends Entity {
             }
             if (disturbedTime < converted)
                 disturbedTime = converted;
-            if (getWorld() != null) getWorld().increaseDangerLevel(converted - 0.5f);
+            if (getWorld() != null) getWorld().increaseDangerLevel(converted + 0.5f);
         }
     }
 

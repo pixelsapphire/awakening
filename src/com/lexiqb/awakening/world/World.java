@@ -1,5 +1,6 @@
 package com.lexiqb.awakening.world;
 
+import com.lexiqb.awakening.entities.Entity;
 import com.lexiqb.awakening.entities.Player;
 import com.lexiqb.awakening.entities.Sensor;
 import com.lexiqb.awakening.entities.Slime;
@@ -80,16 +81,14 @@ public class World extends Scene {
     protected void loop() {
         if (dangerLevel > criticalLevel) {
             // TODO game over, ROBUST eats you
+            getContext().getWindow().close();
         }
         dangerLevel -= 0.5f * getDeltaTime().asSeconds();
         if (dangerLevel < 0f) dangerLevel = 0f;
 
         readjustView();
 
-        player.update(getDeltaTime());
-        for (var s : slimes) s.update(getDeltaTime());
-        // TODO same for patrollers
-        for (var s : sensors) s.update(getDeltaTime());
+        stream().filter(o->o instanceof Entity).forEach(e->((Entity) e).update(getDeltaTime()));
 
         getContext().getWindow().<GameplayHUD>getHUD().setStamina(player.getStaminaPercentage());
         getContext().getWindow().<GameplayHUD>getHUD().setNoise(dangerLevel / criticalLevel);

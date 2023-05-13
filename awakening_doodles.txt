@@ -15,7 +15,7 @@ Jaki typ gry?
 - resource management
 - adventure                  V
 - action adventure
-- puzzle                     V
+- puzzle                     ?
 - rogue-like
 - souls-like (probably not)
 

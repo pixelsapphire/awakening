@@ -34,7 +34,7 @@ public class Player extends Slime {
         if (yellCd == 0) {
             if (Keyboard.isKeyPressed(Keyboard.Key.SPACE)) {
                 yellCd = betweenYells;
-                // TODO make some NOOOOOOOOOOISE
+                /* TODO make some NOOOOOOOOOOISE */
                 assert getWorld() != null;
                 getWorld().makeNoise(getPosition(), 75);
                 for (final Slime slam : getWorld().getSlimes()) {
