@@ -54,7 +54,7 @@ public abstract class World extends Scene {
         final var playerCenter = player.getGlobalBounds().getCenter();
         float viewCenterX = view.getCenter().x, viewCenterY = view.getCenter().y;
         if (followOnX) viewCenterX = playerCenter.x;
-        if (followOnY) viewCenterY = playerCenter.y;
+        if (followOnY) viewCenterY = playerCenter.y + player.getGlobalBounds().height / 2f;
         ((View) view).setCenter(Vec2.f(viewCenterX, viewCenterY));
         getContext().getWindow().setView(view);
 

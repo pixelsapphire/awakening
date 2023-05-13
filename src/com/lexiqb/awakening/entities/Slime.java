@@ -19,8 +19,7 @@ public class Slime extends Entity {
 
     private static final float movementSpeed = 120;
     private final Texture[][] animations = GameContext.getInstance().getAssetsBundle().<TextureAtlas>get("texture.entity.player").getMatrix(32, 32, 5, 4);
-    private final float[] loopTimes = {0.05f, 0.1f, 0.2f, 0.25f, /*takeoff*/0.3f, 0.4f, 0.65f, /*landing*/0.75f, 0.8f, 0.85f, 0.95f, 1f};
-//    {0.025f, 0.05f, 0.1f, 0.125f, 0.15f, 0.35f, 0.45f, 0.875f, 0.9f, 0.95f, 0.975f, 1f};
+    private final float[] loopTimes = {0.05f, 0.1f, 0.2f, 0.25f, 0.3f, 0.4f, 0.65f, 0.75f, 0.8f, 0.85f, 0.95f, 1f};
     private final float loopLength = 1.2f;
     private float movementTime = 0;
     private Direction facing = Direction.SOUTH;
@@ -78,7 +77,7 @@ public class Slime extends Entity {
         }
 
         // Resetting the time of animation
-        if (direction == Direction.NULL && animationIndex == 2)
+        if (direction == Direction.NULL && animationIndex == 2 && (movementTime >= loopLength * loopTimes[8] || movementTime < loopLength * loopTimes[4]))
             movementTime = 0;
 
         if (animationIndex > 2) {
