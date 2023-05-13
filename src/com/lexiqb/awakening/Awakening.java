@@ -1,9 +1,11 @@
 package com.lexiqb.awakening;
 
+import com.lexiqb.awakening.data.WorldData;
 import com.lexiqb.awakening.entities.Player;
 import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.Game;
 import com.rubynaxela.kyanite.game.assets.AssetsBundle;
+import com.rubynaxela.kyanite.game.assets.DataAsset;
 import com.rubynaxela.kyanite.graphics.AnimatedTexture;
 import com.rubynaxela.kyanite.graphics.ConstTexture;
 import com.rubynaxela.kyanite.graphics.Texture;
@@ -26,6 +28,7 @@ public class Awakening extends Game {
         assets.register("texture.ui.noise", new Texture("assets/textures/ui/noise.png"));
 
         assets.register("texture.world.gate", new Texture("assets/textures/world/gate.png"));
+        assets.register("texture.world.gate_alt", new Texture("assets/textures/world/gate_alt.png"));
 
         assets.register("texture.world.lobby.background", new Texture("assets/textures/world/touch_sum_grass.png"));
 
@@ -35,6 +38,8 @@ public class Awakening extends Game {
                         new AnimatedTexture(Stream.of(0, 1, 2, 3, 4, 5, 6, 7, 8)
                                                   .map(i -> new Texture("assets/textures/world/portal/stage" + i + ".png"))
                                                   .toArray(ConstTexture[]::new), 1 / 9f));
+
+        assets.register("data.world.lobby", new DataAsset("assets/worlds/lobby.json"));
     }
 
     @Override
@@ -43,7 +48,7 @@ public class Awakening extends Game {
         final var player = new Player();
         getContext().putResource("entity.player", new Player());
         getContext().getWindow().setHUD(new GameplayHUD());
-        final var lobby = new Lobby();
+        final var lobby = getContext().getAssetsBundle().<DataAsset>get("data.world.lobby").convertTo(WorldData.class).build();
         lobby.attachPlayer(player);
         getContext().getWindow().setScene(lobby);
     }

@@ -1,0 +1,21 @@
+{
+  "background": "texture.world.lobby.background",
+  "width": 2048,
+  "height": 2048,
+  "portals": [
+    {
+      "x": 400,
+      "y": 400,
+      "color": "orange",
+      "facing": "left",
+      "destination": null
+    },
+    {
+      "x": 900,
+      "y": 600,
+      "color": "orange",
+      "facing": "right",
+      "destination": null
+    }
+  ]
+}
