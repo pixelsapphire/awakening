@@ -1,9 +1,9 @@
 package com.lexiqb.awakening.entities;
 
-import com.lexiqb.awakening.MapObject;
-import com.rubynaxela.kyanite.math.FloatRect;
+import com.lexiqb.awakening.GameObject;
 
-public class Obstacle extends MapObject {
+public class Obstacle extends GameObject {
+
     public Obstacle() {
 //        setSize();
 //        setOrigin(getSize().x / 2, getSize().y);
@@ -11,7 +11,7 @@ public class Obstacle extends MapObject {
 
     @SuppressWarnings("SuspiciousNameCombination")
     public void makeSquareHitBox() {
-        setHitBox(new FloatRect(getPositionOnMap().x - getSize().x / 2, getPositionOnMap().y - getSize().x,
-                getSize().x, getSize().x));  // TODO probably wrong // why tho
+//        setHitBox(new FloatRect(getPositionOnMap().x - getSize().x / 2, getPositionOnMap().y - getSize().x,
+//                getSize().x, getSize().x));  // TODO probably wrong
     }
 }

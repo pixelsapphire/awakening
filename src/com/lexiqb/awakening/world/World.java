@@ -2,7 +2,11 @@ package com.lexiqb.awakening.world;
 
 import com.lexiqb.awakening.entities.Player;
 import com.rubynaxela.kyanite.game.Scene;
-import com.rubynaxela.kyanite.graphics.*;
+import com.rubynaxela.kyanite.graphics.ConstView;
+import com.rubynaxela.kyanite.graphics.RectangleShape;
+import com.rubynaxela.kyanite.graphics.Texture;
+import com.rubynaxela.kyanite.graphics.View;
+import com.rubynaxela.kyanite.math.IntRect;
 import com.rubynaxela.kyanite.math.Vec2;
 import com.rubynaxela.kyanite.math.Vector2i;
 import com.rubynaxela.kyanite.window.Window;
@@ -35,6 +39,7 @@ public abstract class World extends Scene {
     public void attachPlayer(@NotNull Player player) {
         this.player = player;
         add(player);
+        player.assignWorld(this);
     }
 
     @Override
@@ -58,4 +63,7 @@ public abstract class World extends Scene {
         updateOrder();
     }
 
+    public IntRect getBounds() {
+        return new IntRect(0, 0, size.x, size.y);
+    }
 }

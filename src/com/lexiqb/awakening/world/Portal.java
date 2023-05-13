@@ -1,12 +1,12 @@
 package com.lexiqb.awakening.world;
 
-import com.lexiqb.awakening.MapObject;
+import com.lexiqb.awakening.GameObject;
 import com.rubynaxela.kyanite.game.GameContext;
 import com.rubynaxela.kyanite.graphics.AnimatedTexture;
 import com.rubynaxela.kyanite.graphics.Color;
 import com.rubynaxela.kyanite.math.Vec2;
 
-public class Portal extends MapObject {
+public class Portal extends GameObject {
 
     public Portal(Color color) {
         setSize(64, 104);
