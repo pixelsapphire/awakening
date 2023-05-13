@@ -50,6 +50,10 @@ public class Slime extends Entity {
         keepInWorldBounds(deltaTime);
     }
 
+    public void awaken() {
+        restricted = false;
+    }
+
     protected void resetMovementTime() {
         if (movementTime < loopLength * loopTimes[4] || movementTime > loopLength * loopTimes[9])
             movementTime = 0f;

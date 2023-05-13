@@ -2,13 +2,14 @@ package com.lexiqb.awakening.entities;
 
 import com.rubynaxela.kyanite.input.Keyboard;
 import com.rubynaxela.kyanite.math.Direction;
+import com.rubynaxela.kyanite.math.MathUtils;
 import com.rubynaxela.kyanite.util.Time;
 import org.jetbrains.annotations.NotNull;
 
 public class Player extends Slime {
 
-    private static final float maxStamina = 100, staminaRegen = 15, sUsSprint = 30, sUsRegular = 20, sUsSneak = 5;
-    private float stamina = maxStamina;
+    private static final float maxStamina = 100, staminaRegen = 15, sUsSprint = 30, sUsRegular = 20, sUsSneak = 5, betweenYells = 2;
+    private float stamina = maxStamina, yellCd = 0f;
 
     public Player() {
         super(SizeClass.PRETTY_AVERAGE);
@@ -27,6 +28,22 @@ public class Player extends Slime {
         if (stamina > maxStamina) stamina = maxStamina;
         if (stamina < 0 && !restricted) restricted = true;
         if (stamina >= 10 && restricted) restricted = false;
+
+        if (yellCd > 0) yellCd -= deltaTime.asSeconds();
+        if (yellCd < 0) yellCd = 0;
+        if (yellCd == 0) {
+            if (Keyboard.isKeyPressed(Keyboard.Key.SPACE)) {
+                yellCd = betweenYells;
+                // TODO make some NOOOOOOOOOOISE
+                assert getWorld() != null;
+                getWorld().makeNoise(getPosition(), 75);
+                for (final Slime slam : getWorld().getSlimes()) {
+                    if (MathUtils.distance(getPosition(), slam.getPosition()) < 100) {
+                        slam.awaken();
+                    }
+                }
+            }
+        }
 
         // Sneaking
         if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) setScale(1.0f, 0.75f);

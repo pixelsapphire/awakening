@@ -1,6 +1,8 @@
 package com.lexiqb.awakening.world;
 
 import com.lexiqb.awakening.entities.Player;
+import com.lexiqb.awakening.entities.Sensor;
+import com.lexiqb.awakening.entities.Slime;
 import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.Scene;
 import com.rubynaxela.kyanite.graphics.ConstView;
@@ -19,6 +21,7 @@ public class World extends Scene {
     private final Vector2i size;
     private final Window window;
     private Player player;
+    private ArrayList<Slime> slimes = new ArrayList<>();
     private ArrayList<Sensor> sensors = new ArrayList<>();
     private final float dissipationFactor = 1f, criticalLevel = 25f;
     private float dangerLevel = 0f;
@@ -84,6 +87,9 @@ public class World extends Scene {
         readjustView();
 
         player.update(getDeltaTime());
+        for (var s : slimes) s.update(getDeltaTime());
+        // TODO same for patrollers
+        for (var s : sensors) s.update(getDeltaTime());
 
         getContext().getWindow().<GameplayHUD>getHUD().setStamina(player.getStaminaPercentage());
         getContext().getWindow().<GameplayHUD>getHUD().setNoise(dangerLevel / criticalLevel);
@@ -113,5 +119,9 @@ public class World extends Scene {
 
     public float convertFromdB(@Unit("dB") float value) {
         return (float) Math.pow(10, (value/10f - 12));
+    }
+
+    public ArrayList<Slime> getSlimes() {
+        return slimes;
     }
 }

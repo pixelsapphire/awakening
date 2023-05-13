@@ -1,4 +1,4 @@
-package com.lexiqb.awakening.world;
+package com.lexiqb.awakening.entities;
 
 import com.lexiqb.awakening.entities.Entity;
 import com.rubynaxela.kyanite.game.GameContext;
@@ -18,6 +18,7 @@ public class Sensor extends Entity {
         setTexture(entranceTexture);
         setFillColor(Colors.PURPLE);
         setOrigin(getSize().x / 2f, getSize().y);
+        freezeAnimatedTexture();
     }
 
     public void disturb(float volume) {
