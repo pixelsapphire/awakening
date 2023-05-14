@@ -29,7 +29,7 @@ public class World extends Scene {
     public World(int width, int height, @NotNull Texture background) {
         size = Vec2.i(width, height);
         window = getContext().getWindow();
-        setOrderingPolicy(OrderingPolicy.Y_BASED);
+        setRenderingPolicy(RenderingPolicy.MIXED);
         final var backgroundShep = new RectangleShape(width, height);
         backgroundShep.setTexture(background);
         backgroundShep.setLayer(-1);
@@ -40,6 +40,7 @@ public class World extends Scene {
         this.player = player;
         add(player);
         player.assignWorld(this);
+        player.setLayer(0);
     }
 
     @Override
@@ -104,6 +105,7 @@ public class World extends Scene {
                         slime.portal = (Portal) p;
                         slime.inPortal = true;
                         slime.disableMovement();
+                        slime.setLayer(2);
                         break;
                     }
                 }
@@ -126,6 +128,7 @@ public class World extends Scene {
                         getPlayer().portal = (Portal) p;
                         getPlayer().inPortal = true;
                         getPlayer().disableMovement();
+                        getPlayer().setLayer(2);
                         break;
                     }
                 }
