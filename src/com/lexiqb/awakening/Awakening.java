@@ -33,6 +33,7 @@ public class Awakening extends Game {
         assets.register("texture.ui.health", new Texture("assets/textures/ui/health.png"));
         assets.register("texture.ui.stamina", new Texture("assets/textures/ui/stamina.png"));
         assets.register("texture.ui.noise", new Texture("assets/textures/ui/noise.png"));
+        assets.register("texture.ui.background", new Texture("assets/textures/ui/summary_background.png"));
 
         assets.register("texture.world.gate", new Texture("assets/textures/world/gate.png"));
         assets.register("texture.world.gate_alt", new Texture("assets/textures/world/gate_alt.png"));

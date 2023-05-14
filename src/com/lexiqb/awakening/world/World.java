@@ -1,11 +1,15 @@
 package com.lexiqb.awakening.world;
 
+import com.lexiqb.awakening.data.WorldData;
 import com.lexiqb.awakening.entities.*;
+import com.lexiqb.awakening.ui.GameSummaryHUD;
 import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.GameContext;
 import com.rubynaxela.kyanite.game.Scene;
+import com.rubynaxela.kyanite.game.assets.DataAsset;
 import com.rubynaxela.kyanite.game.assets.Sound;
 import com.rubynaxela.kyanite.graphics.*;
+import com.rubynaxela.kyanite.input.Keyboard;
 import com.rubynaxela.kyanite.math.*;
 import com.rubynaxela.kyanite.util.Unit;
 import com.rubynaxela.kyanite.window.Window;
@@ -79,9 +83,20 @@ public class World extends Scene {
         stream().filter(o -> o instanceof Entity).forEach(e -> ((Entity) e).update(getDeltaTime()));
 
         succ();
+        if (getContext().getWindow().getHUD() instanceof GameplayHUD) {
+            getContext().getWindow().<GameplayHUD>getHUD().setStamina(player.getStaminaPercentage());
+            getContext().getWindow().<GameplayHUD>getHUD().setNoise(dangerLevel / criticalLevel);
+        }
 
-        getContext().getWindow().<GameplayHUD>getHUD().setStamina(player.getStaminaPercentage());
-        getContext().getWindow().<GameplayHUD>getHUD().setNoise(dangerLevel / criticalLevel);
+        if (getContext().getWindow().getHUD() instanceof GameSummaryHUD) {
+            if (Keyboard.isKeyPressed(Keyboard.Key.RETURN)) {
+//                var newWorld = getContext().getAssetsBundle().<DataAsset>get("data.world.lobby").convertTo(WorldData.class).build();
+//                getContext().getWindow().setScene();
+                getContext().restartGame();
+            }
+            if (Keyboard.isKeyPressed(Keyboard.Key.ESCAPE))
+                getContext().getWindow().close();
+        }
 
         updateOrder();
     }
@@ -128,7 +143,9 @@ public class World extends Scene {
                 }
             }
         }
-        getContext().getWindow().<GameplayHUD>getHUD().setSlimeCount(remainingBois);
+        if (getContext().getWindow().getHUD() instanceof GameplayHUD) {
+            getContext().getWindow().<GameplayHUD>getHUD().setSlimeCount(remainingBois);
+        }
         for (var s : toRemove) slimes.remove(s);
         if (allSafe) {
             if (!getPlayer().inPortal) {
@@ -147,7 +164,7 @@ public class World extends Scene {
                 getPlayer().move(Vec2.multiply(Vec2.subtract(Vec2.add(getPlayer().portal.getGlobalBounds().getCenter(), Vec2.multiply(getPlayer().portal.getSize(), 0.1f)), getPlayer().getGlobalBounds().getCenter()), portalSuccSpeed * getDeltaTime().asSeconds()));  // huh?
 
                 if (getPlayer().getScale().x < disappearScale) {
-                    getContext().getWindow().close(); // TODO change this to transport to new map / make another HUD appear
+                    getContext().getWindow().setHUD(new GameSummaryHUD(GameSummaryHUD.RESULT.VICTORY));
                 }
             }
         }

@@ -39,7 +39,7 @@ public class Player extends Slime {
                 assert getWorld() != null;
                 getWorld().makeNoise(getPosition(), 75);
                 for (final Slime slam : getWorld().getSlimes())
-                    if (MathUtils.distance(getPosition(), slam.getPosition()) < 100) slam.awaken();
+                    if (MathUtils.distance(getPosition(), slam.getPosition()) < 150) slam.awaken();
             }
         }
 
