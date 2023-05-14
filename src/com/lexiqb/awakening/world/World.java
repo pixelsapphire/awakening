@@ -53,19 +53,36 @@ public class World extends Scene {
     protected void init() {
 
         add(rarelyObservedUnidentifiedSusThing);
-        Shrensor testS = new Shrensor();
-        testS.setPosition(600, 200);
-        testS.assignWorld(this);
-        shrensors.add(testS);
 
-        Slime slims = new Slime(Slime.SizeClass.SMOL_GUY);
-        slims.setFillColor(Colors.CADET_BLUE);
-        slims.setPosition(200, 800);
-        slims.assignWorld(this);
-        slimes.add(slims);
-        add(testS, slims);
+        addShrensor(600, 200);
+        addShrensor(1940, 1940);
+        addShrensor(1410, 320);
+        addShrensor(580, 1180);
+
+        addSlime(200, 800);
+        addSlime(510, 600);
+        addSlime(860, 130);
+        addSlime(1900, 1880);
+        addSlime(1350, 400);
 
         updateOrder();
+    }
+
+    private void addShrensor(float x, float y) {
+        Shrensor sensor = new Shrensor();
+        sensor.setPosition(x, y);
+        sensor.assignWorld(this);
+        shrensors.add(sensor);
+        add(sensor);
+    }
+
+    private void addSlime(float x, float y) {
+        Slime slime = new Slime(Slime.SizeClass.SMOL_GUY);
+        slime.setFillColor(Colors.CADET_BLUE);
+        slime.setPosition(x, y);
+        slime.assignWorld(this);
+        slimes.add(slime);
+        add(slime);
     }
 
     @Override

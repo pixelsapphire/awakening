@@ -1,6 +1,7 @@
 package com.lexiqb.awakening.entities;
 
 import com.lexiqb.awakening.GameObject;
+import com.lexiqb.awakening.ui.GameSummaryHUD;
 import com.rubynaxela.kyanite.game.GameContext;
 import com.rubynaxela.kyanite.game.assets.AudioHandler;
 import com.rubynaxela.kyanite.game.assets.Sound;
@@ -20,7 +21,7 @@ public class Leech extends Entity {
                                                                                     .getRow(128, 128, 12), 0.15f);
     private static final Sound roarSound = GameContext.getInstance().getAssetsBundle().get("sound.entity.leech.roar");
     private static final Sound nomSound = GameContext.getInstance().getAssetsBundle().get("sound.entity.leech.nom");
-    private boolean awakened = false, nommingStarted = false, nommingEnded = false;
+    private boolean awakened = false, nommingStarted = false, nommingEnded = false, gameEnded = false;
     private Time eatingTime = Time.ZERO;
     private Player food;
 
@@ -64,6 +65,12 @@ public class Leech extends Entity {
                                obj.setFillColor(Colors.TRANSPARENT);
                        });
             }
-        } else if (getTexture() instanceof AnimatedTexture) freezeAnimatedTexture();
+            if (!gameEnded && eatingTime.asSeconds() >= 2 + animation.getFrameDuration() * 12) {
+                GameContext.getInstance().getWindow().setHUD(new GameSummaryHUD(GameSummaryHUD.RESULT.DEFEAT));
+                gameEnded = true;
+            }
+        } else if (getTexture() instanceof AnimatedTexture) {
+            freezeAnimatedTexture();
+        }
     }
 }

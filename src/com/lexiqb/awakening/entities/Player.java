@@ -44,7 +44,7 @@ public class Player extends Slime {
                 yellCooldown = betweenYells;
                 GameContext.getInstance().getAudioHandler().playSound(wakeSound, "player", 50.0f, 1.0f, false);
                 assert getWorld() != null;
-                getWorld().makeNoise(getPosition(), 75);
+                getWorld().makeNoise(getPosition(), 120);
                 for (final Slime slam : getWorld().getSlimes())
                     if (MathUtils.distance(getPosition(), slam.getPosition()) < 150) slam.awaken();
             }
