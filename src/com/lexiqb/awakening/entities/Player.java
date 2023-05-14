@@ -44,8 +44,10 @@ public class Player extends Slime {
         }
 
         // Sneaking
-        if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) setScale(1.0f, 0.75f);
-        else setScale(1.0f);
+        if (movementEnabled) {
+            if (Keyboard.isKeyPressed(Keyboard.Key.LSHIFT)) setScale(1.0f, 0.75f);
+            else setScale(1.0f);
+        }
     }
 
     @Override

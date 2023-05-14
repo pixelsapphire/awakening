@@ -29,7 +29,7 @@ public class World extends Scene {
     public World(int width, int height, @NotNull Texture background) {
         size = Vec2.i(width, height);
         window = getContext().getWindow();
-        setOrderingPolicy(OrderingPolicy.Y_BASED);
+//        setOrderingPolicy(OrderingPolicy.Y_BASED);
         final var backgroundShep = new RectangleShape(width, height);
         backgroundShep.setTexture(background);
         backgroundShep.setLayer(-1);
@@ -55,7 +55,7 @@ public class World extends Scene {
         shrensors.add(testS);
         Slime slims = new Slime(Slime.SizeClass.SMOL_GUY);
         slims.setFillColor(Colors.CADET_BLUE);
-        slims.setPosition(1600, 1400);
+        slims.setPosition(200, 800);
         slims.assignWorld(this);
         slimes.add(slims);
         add(testS, slims);
@@ -103,21 +103,60 @@ public class World extends Scene {
 
     private void succ() {
         boolean allSafe = slimes.size() == 0;
+        ArrayList<Slime> toRemove = new ArrayList<>();
         for (var s : slimes) {
             if (!s.inPortal) {
                 for (var p : stream().filter(o -> o instanceof Portal).toList()) {
                     if (p instanceof Portal) {
-                        if (s.getGlobalBounds().intersects(((Portal) p).getGlobalBounds())) {
+                        if (((Portal) p).getGlobalBounds().contains(s.getPosition())) {
                             s.portal = (Portal) p;
                             s.inPortal = true;
+                            s.disableMovement();
                             break;
                         }
                     }
                 }
             } else {
                 assert s.portal != null;
-                System.out.println("slime in portal");
+                System.out.println("slime in portal"); // Well, yes
                 // TODO animation that succ
+//                s.setScale(Vec2.multiply(s.getScale(), 0.6 * getDeltaTime().asSeconds()));
+                // s.setScale(Vec2.multiply(s.getScale(), 0.9962f));
+                s.scale(0.981f);
+                s.move(Vec2.multiply(Vec2.subtract(Vec2.add(s.portal.getGlobalBounds().getCenter(), Vec2.multiply(s.portal.getSize(), 0.1f)), s.getGlobalBounds().getCenter()), 0.6 * getDeltaTime().asSeconds()));  // huh?
+                if (s.getScale().x < 0.1) {
+                    System.out.println("WAAAAAAAAAAAAGH");
+                    toRemove.add(s); // TODO change this so it doesn't bonjour
+                    scheduleToRemove(s);
+                }
+            }
+        }
+        for (var s : toRemove) {
+            slimes.remove(s);
+        }
+        if (allSafe) {
+            if (!getPlayer().inPortal) {
+                for (var p : stream().filter(o -> o instanceof Portal).toList()) {
+                    if (p instanceof Portal) {
+                        if (((Portal) p).getGlobalBounds().contains(getPlayer().getPosition())) {
+                            getPlayer().portal = (Portal) p;
+                            getPlayer().inPortal = true;
+                            getPlayer().disableMovement();
+                            break;
+                        }
+                    }
+                }
+            } else {
+                assert getPlayer().portal != null;
+                // TODO animation that succ player
+//                getPlayer().setScale(Vec2.multiply(getPlayer().getScale(), 0.6 * getDeltaTime().asSeconds()));
+//                getPlayer().setScale(Vec2.multiply(getPlayer().getScale(), 0.9915f));
+                getPlayer().scale(0.981f);
+                getPlayer().move(Vec2.multiply(Vec2.subtract(Vec2.add(getPlayer().portal.getGlobalBounds().getCenter(), Vec2.multiply(getPlayer().portal.getSize(), 0.1f)), getPlayer().getGlobalBounds().getCenter()), 0.6 * getDeltaTime().asSeconds()));  // huh?
+
+                if (getPlayer().getScale().x < 0.1) {
+                    getContext().getWindow().close(); // TODO change this to transport to new map / make another HUD appear
+                }
             }
         }
     }

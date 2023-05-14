@@ -26,7 +26,7 @@ public class Slime extends Entity {
     private final SizeClass sizeClass;
     public boolean inPortal = false;
     public Portal portal = null;
-    protected boolean restricted = true;
+    protected boolean restricted = true, movementEnabled = true;
     private float movementTime = 0;
     private Direction facing = Direction.NORTH;
     private Motion motion = Motion.IDLE;
@@ -55,7 +55,9 @@ public class Slime extends Entity {
     }
 
     protected void movement(@NotNull Time deltaTime) {
-        final var direction = getDirection();
+        final Direction direction;
+        if (movementEnabled) direction = getDirection();
+        else direction = Direction.NULL;
         int animationIndex = getAnimationFrame();
 
         // If requested and allowed movement or animation loop is unfinished, add time to finish animation
@@ -92,7 +94,8 @@ public class Slime extends Entity {
             if (direction != Direction.NULL && restricted) motion = Motion.IDLE;
             setVelocity(Vector2f.zero());
         } else {
-            setVelocity(Vec2.multiply(facing.vector, movementSpeed * motion.speedModifier));
+            if (movementEnabled) setVelocity(Vec2.multiply(facing.vector, movementSpeed * motion.speedModifier));
+            else setVelocity(Vector2f.zero());
         }
 
         // Setting texture
@@ -197,6 +200,10 @@ public class Slime extends Entity {
     public void awaken() {
         restricted = false;
         facing = Direction.SOUTH;
+    }
+
+    public void disableMovement() {
+        movementEnabled = false;
     }
 
     @Override
