@@ -118,6 +118,7 @@ public class World extends Scene {
                 }
             }
         }
+        getContext().getWindow().<GameplayHUD>getHUD().setSlimeCount(remainingBois);
         for (var s : toRemove) slimes.remove(s);
         if (allSafe) {
             if (!getPlayer().inPortal) {
