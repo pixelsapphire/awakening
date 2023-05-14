@@ -11,6 +11,7 @@ public abstract class GameObject extends RectangleShape implements HitBoxObject 
 
     @Override
     public @Nullable FloatRect getHitBox() {
+        if (hitBox == null) return null;
         final var bounds = getGlobalBounds();
         return new FloatRect(hitBox.left + bounds.left, hitBox.top + bounds.top, hitBox.width, hitBox.height);
     }

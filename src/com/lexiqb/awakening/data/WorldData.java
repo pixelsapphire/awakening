@@ -55,6 +55,12 @@ public class WorldData {
             if (type.equalsIgnoreCase("boulder")) {
                 return Utils.lambdaInit(new Obstacle(MathUtils.randomOf(
                         Obstacle.Type.BOULDER_1, Obstacle.Type.BOULDER_2, Obstacle.Type.BOULDER_3)), o -> o.setPosition(x, y));
+            } else if (type.equalsIgnoreCase("tree")) {
+                return Utils.lambdaInit(new Obstacle(MathUtils.randomOf(
+                        Obstacle.Type.TREE_1, Obstacle.Type.TREE_2, Obstacle.Type.TREE_3)), o -> o.setPosition(x, y));
+            } else if (type.equalsIgnoreCase("bush")) {
+                return Utils.lambdaInit(new Obstacle(MathUtils.randomOf(
+                        Obstacle.Type.BUSH_1, Obstacle.Type.BUSH_2)), o -> o.setPosition(x, y));
             } else {
                 throw new RuntimeException("Unknown decor type: " + type);
             }

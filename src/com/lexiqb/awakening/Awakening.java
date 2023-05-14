@@ -37,9 +37,14 @@ public class Awakening extends Game {
         assets.register("texture.world.gate", new Texture("assets/textures/world/gate.png"));
         assets.register("texture.world.gate_alt", new Texture("assets/textures/world/gate_alt.png"));
 
-        assets.register("texture.world.boulders.boulder1", new Texture("assets/textures/world/boulders/boulder1.png"));
-        assets.register("texture.world.boulders.boulder2", new Texture("assets/textures/world/boulders/boulder2.png"));
-        assets.register("texture.world.boulders.boulder3", new Texture("assets/textures/world/boulders/boulder3.png"));
+        assets.register("texture.world.boulders.boulder1", new Texture("assets/textures/world/decor/boulder1.png"));
+        assets.register("texture.world.boulders.boulder2", new Texture("assets/textures/world/decor/boulder2.png"));
+        assets.register("texture.world.boulders.boulder3", new Texture("assets/textures/world/decor/boulder3.png"));
+        assets.register("texture.world.bush.bush1", new Texture("assets/textures/world/decor/bush1.png"));
+        assets.register("texture.world.bush.bush2", new Texture("assets/textures/world/decor/bush2.png"));
+        assets.register("texture.world.bush.tree1", new Texture("assets/textures/world/decor/tree1.png"));
+        assets.register("texture.world.bush.tree2", new Texture("assets/textures/world/decor/tree2.png"));
+        assets.register("texture.world.bush.tree3", new Texture("assets/textures/world/decor/tree3.png"));
 
         assets.register("texture.world.lobby.background", new Texture("assets/textures/world/touch_sum_grass.png"));
 
@@ -56,11 +61,12 @@ public class Awakening extends Game {
 
         getContext().getAudioHandler().createChannel("player");
         getContext().getAudioHandler().createChannel("environment");
-        assets.register("sound.entity.leech.roar", Utils.lambdaInit(new Sound("assets/sounds/entity/leech.ogg"), s -> s.setPitch(0.5f)));
+        assets.register("sound.entity.leech.roar", Utils.lambdaInit(new Sound("assets/sounds/entity/leech.ogg")));
         assets.register("sound.entity.leech.nom", new Sound("assets/sounds/entity/nom.ogg"));
         assets.register("sound.entity.slime.takeoff", new Sound("assets/sounds/entity/slime/takeoff.ogg"));
         assets.register("sound.entity.slime.land", new Sound("assets/sounds/entity/slime/splat.ogg"));
         assets.register("sound.world.shrensor.disturb", new Sound("assets/sounds/world/shrensor.ogg"));
+        assets.register("sound.world.portal.enter", new Sound("assets/sounds/world/portal.ogg"));
 
         // ================================[ Worlds ]================================
 
@@ -71,7 +77,6 @@ public class Awakening extends Game {
     protected void init() {
         getContext().setupWindow(1280, 720, "Awakening of the Rarely Observed Big Unidentified Sus Thing");
         final var player = new Player();
-        getContext().putResource("entity.player", new Player());
         getContext().getWindow().setHUD(new GameplayHUD());
         final var lobby = getContext().getAssetsBundle().<DataAsset>get("data.world.lobby").convertTo(WorldData.class).build();
         lobby.attachPlayer(player);

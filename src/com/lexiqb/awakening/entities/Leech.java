@@ -2,6 +2,7 @@ package com.lexiqb.awakening.entities;
 
 import com.lexiqb.awakening.GameObject;
 import com.rubynaxela.kyanite.game.GameContext;
+import com.rubynaxela.kyanite.game.assets.AudioHandler;
 import com.rubynaxela.kyanite.game.assets.Sound;
 import com.rubynaxela.kyanite.graphics.AnimatedTexture;
 import com.rubynaxela.kyanite.graphics.Colors;
@@ -14,6 +15,7 @@ import java.util.Objects;
 
 public class Leech extends Entity {
 
+    private static final AudioHandler audioHandler = GameContext.getInstance().getAudioHandler();
     private static final AnimatedTexture animation = new AnimatedTexture(GameContext.getInstance().getAssetsBundle().<TextureAtlas>get("texture.entity.leech")
                                                                                     .getRow(110, 110, 8), 0.2f);
     private static final Sound roarSound = GameContext.getInstance().getAssetsBundle().get("sound.entity.leech.roar");
@@ -31,9 +33,9 @@ public class Leech extends Entity {
     public void eat(@NotNull Player food) {
         this.food = food;
         food.disableMovement();
-        roarSound.play();
         setPosition(food.getGlobalBounds().getCenter());
         awakened = true;
+        audioHandler.playSound(roarSound, "environment", 100.0f, 0.5f, false);
     }
 
     @Override
@@ -49,7 +51,7 @@ public class Leech extends Entity {
                 setTexture(animation.getFrame(animation.getFramesCount() - 1));
             }
             if (!nommingStarted && eatingTime.asSeconds() >= 2 + animation.getFrameDuration() * 1) {
-                nomSound.play();
+                audioHandler.playSound(nomSound, "environment", 100.0f, 1.0f, false);
                 nommingStarted = true;
             }
             if (!nommingEnded && eatingTime.asSeconds() >= 2 + animation.getFrameDuration() * 3) {
