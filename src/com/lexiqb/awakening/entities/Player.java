@@ -1,5 +1,7 @@
 package com.lexiqb.awakening.entities;
 
+import com.rubynaxela.kyanite.game.GameContext;
+import com.rubynaxela.kyanite.game.assets.Sound;
 import com.rubynaxela.kyanite.input.Keyboard;
 import com.rubynaxela.kyanite.math.Direction;
 import com.rubynaxela.kyanite.math.MathUtils;
@@ -9,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class Player extends Slime {
+
+    private static final Sound wakeSound = GameContext.getInstance().getAssetsBundle().get("sound.entity.player.spell");
 
     private static final float maxStamina = 100, staminaRegen = 15, sUsSprint = 30, sUsRegular = 20, sUsSneak = 5, betweenYells = 2;
     private float stamina = maxStamina, yellCooldown = 0f;
@@ -38,7 +42,7 @@ public class Player extends Slime {
         if (yellCooldown == 0) {
             if (Keyboard.isKeyPressed(Keyboard.Key.SPACE)) {
                 yellCooldown = betweenYells;
-                /* TODO make some NOOOOOOOOOOISE */
+                GameContext.getInstance().getAudioHandler().playSound(wakeSound, "player", 100.0f, 1.0f, false);
                 assert getWorld() != null;
                 getWorld().makeNoise(getPosition(), 75);
                 for (final Slime slam : getWorld().getSlimes())

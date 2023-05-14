@@ -53,11 +53,13 @@ public class World extends Scene {
 
     @Override
     protected void init() {
+
         add(rarelyObservedUnidentifiedSusThing);
         Shrensor testS = new Shrensor();
         testS.setPosition(600, 200);
         testS.assignWorld(this);
         shrensors.add(testS);
+
         Slime slims = new Slime(Slime.SizeClass.SMOL_GUY);
         slims.setFillColor(Colors.CADET_BLUE);
         slims.setPosition(200, 800);
@@ -156,7 +158,7 @@ public class World extends Scene {
                         getPlayer().inPortal = true;
                         getPlayer().disableMovement();
                         getPlayer().setLayer(2);
-                        portalSound.play();
+                        getContext().getAudioHandler().playSound(portalSound, "environment", 75.0f, 1.0f, false);
                         break;
                     }
                 }

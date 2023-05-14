@@ -64,6 +64,7 @@ public class Awakening extends Game {
         getContext().getAudioHandler().createChannel("environment");
         assets.register("sound.entity.leech.roar", Utils.lambdaInit(new Sound("assets/sounds/entity/leech.ogg")));
         assets.register("sound.entity.leech.nom", new Sound("assets/sounds/entity/nom.ogg"));
+        assets.register("sound.entity.player.spell", new Sound("assets/sounds/entity/slime/spell.ogg"));
         assets.register("sound.entity.slime.takeoff", new Sound("assets/sounds/entity/slime/takeoff.ogg"));
         assets.register("sound.entity.slime.land", new Sound("assets/sounds/entity/slime/splat.ogg"));
         assets.register("sound.world.shrensor.disturb", new Sound("assets/sounds/world/shrensor.ogg"));
