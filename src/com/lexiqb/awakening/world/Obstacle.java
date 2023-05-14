@@ -31,7 +31,7 @@ public class Obstacle extends GameObject {
         if (type.name().toLowerCase().contains("boulder"))
             setHitBox(new FloatRect(0, getSize().y * 0.67f, getSize().x, getSize().y * 0.33f));
         if (type.name().toLowerCase().contains("tree"))
-            setHitBox(new FloatRect(getSize().x * 0.33f, 0.99f, getSize().x * 0.33f, 0.01f));
+            setHitBox(new FloatRect(getSize().x * 0.33f, 0.9f * getSize().y, getSize().x * 0.33f, getSize().y));
     }
 
     public enum Type {

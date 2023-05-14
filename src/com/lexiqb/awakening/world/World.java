@@ -102,6 +102,7 @@ public class World extends Scene {
     }
 
     private void readjustView() {
+
         final var playerPosition = player.getPosition();
         final var windowSize = window.getSize();
         final var offsetY = player.getGlobalBounds().height / player.getScale().y / 3f;
@@ -191,6 +192,10 @@ public class World extends Scene {
 
     public float convertFromdB(@Unit("dB") float value) {
         return (float) Math.pow(10, (value / 10f - 12));
+    }
+
+    public float getDangerLevelPercentage() {
+        return dangerLevel / criticalLevel;
     }
 
     public void increaseDangerLevel(float value) {
