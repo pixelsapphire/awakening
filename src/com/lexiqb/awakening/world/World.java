@@ -18,9 +18,9 @@ public class World extends Scene {
     private final Window window;
     private final ArrayList<Slime> slimes = new ArrayList<>();
     private final ArrayList<Shrensor> shrensors = new ArrayList<>();
+    private final Leech rarelyObservedUnidentifiedSusThing = new Leech();
     private Player player;
     private float dangerLevel = 0f;
-    private Leech rarelyObservedUnidentifiedSusThing = new Leech();
 
     public World(@NotNull Vector2i size, @NotNull Texture background) {
         this(size.x, size.y, background);
@@ -29,15 +29,11 @@ public class World extends Scene {
     public World(int width, int height, @NotNull Texture background) {
         size = Vec2.i(width, height);
         window = getContext().getWindow();
-//        setOrderingPolicy(OrderingPolicy.Y_BASED);
+        setOrderingPolicy(OrderingPolicy.Y_BASED);
         final var backgroundShep = new RectangleShape(width, height);
         backgroundShep.setTexture(background);
         backgroundShep.setLayer(-1);
         add(backgroundShep);
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     public void attachPlayer(@NotNull Player player) {
@@ -60,18 +56,12 @@ public class World extends Scene {
         slimes.add(slims);
         add(testS, slims);
 
-//        / (getContext().getWindow().getFramerateLimit() * succTime)
-
-        rarelyObservedUnidentifiedSusThing.spawn(player.getPosition());
         updateOrder();
     }
 
     @Override
     protected void loop() {
-        if (dangerLevel > criticalLevel) {
-            // TODO game over, ROBUST eats you
-            getContext().getWindow().close();
-        }
+        if (dangerLevel > criticalLevel) rarelyObservedUnidentifiedSusThing.eat(player);
         dangerLevel -= 0.5f * getDeltaTime().asSeconds();
         if (dangerLevel < 0f) dangerLevel = 0f;
 
@@ -107,55 +97,51 @@ public class World extends Scene {
         boolean allSafe = true;
         int remainingBois = 0;
         ArrayList<Slime> toRemove = new ArrayList<>();
-        for (var s : slimes) {
-            if (!s.inPortal) {
+        for (final var slime : slimes) {
+            if (!slime.inPortal) {
                 for (var p : stream().filter(o -> o instanceof Portal).toList()) {
-                    if (p instanceof Portal) {
-                        if (((Portal) p).getGlobalBounds().contains(s.getPosition())) {
-                            s.portal = (Portal) p;
-                            s.inPortal = true;
-                            s.disableMovement();
-                            break;
-                        }
+                    if (((Portal) p).getGlobalBounds().contains(slime.getPosition())) {
+                        slime.portal = (Portal) p;
+                        slime.inPortal = true;
+                        slime.disableMovement();
+                        break;
                     }
                 }
                 remainingBois++;
                 allSafe = false;
             } else {
-                assert s.portal != null;
-                s.scale((float) Math.exp(Math.log(disappearScale) * getDeltaTime().asSeconds() / portalSuccTime));
-                s.move(Vec2.multiply(Vec2.subtract(Vec2.add(s.portal.getGlobalBounds().getCenter(), Vec2.multiply(s.portal.getSize(), 0.1f)), s.getGlobalBounds().getCenter()), portalSuccSpeed * getDeltaTime().asSeconds()));
-                if (s.getScale().x < 0.1) {
-                    toRemove.add(s);
-                    scheduleToRemove(s);
+                slime.scale((float) Math.exp(Math.log(disappearScale) * getDeltaTime().asSeconds() / portalSuccTime));
+                slime.move(Vec2.multiply(Vec2.subtract(Vec2.add(slime.portal.getGlobalBounds().getCenter(), Vec2.multiply(slime.portal.getSize(), 0.1f)), slime.getGlobalBounds().getCenter()), portalSuccSpeed * getDeltaTime().asSeconds()));
+                if (slime.getScale().x < disappearScale) {
+                    toRemove.add(slime);
+                    scheduleToRemove(slime);
                 }
             }
         }
-        for (var s : toRemove) {
-            slimes.remove(s);
-        }
+        for (var s : toRemove) slimes.remove(s);
         if (allSafe) {
             if (!getPlayer().inPortal) {
                 for (var p : stream().filter(o -> o instanceof Portal).toList()) {
-                    if (p instanceof Portal) {
-                        if (((Portal) p).getGlobalBounds().contains(getPlayer().getPosition())) {
-                            getPlayer().portal = (Portal) p;
-                            getPlayer().inPortal = true;
-                            getPlayer().disableMovement();
-                            break;
-                        }
+                    if (((Portal) p).getGlobalBounds().contains(getPlayer().getPosition())) {
+                        getPlayer().portal = (Portal) p;
+                        getPlayer().inPortal = true;
+                        getPlayer().disableMovement();
+                        break;
                     }
                 }
             } else {
-                assert getPlayer().portal != null;
                 getPlayer().scale((float) Math.exp(Math.log(disappearScale) * getDeltaTime().asSeconds() / portalSuccTime));
                 getPlayer().move(Vec2.multiply(Vec2.subtract(Vec2.add(getPlayer().portal.getGlobalBounds().getCenter(), Vec2.multiply(getPlayer().portal.getSize(), 0.1f)), getPlayer().getGlobalBounds().getCenter()), portalSuccSpeed * getDeltaTime().asSeconds()));  // huh?
 
-                if (getPlayer().getScale().x < 0.1) {
+                if (getPlayer().getScale().x < disappearScale) {
                     getContext().getWindow().close(); // TODO change this to transport to new map / make another HUD appear
                 }
             }
         }
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     public IntRect getBounds() {
