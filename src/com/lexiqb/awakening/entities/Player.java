@@ -6,6 +6,8 @@ import com.rubynaxela.kyanite.math.MathUtils;
 import com.rubynaxela.kyanite.util.Time;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class Player extends Slime {
 
     private static final float maxStamina = 100, staminaRegen = 15, sUsSprint = 30, sUsRegular = 20, sUsSneak = 5, betweenYells = 2;
@@ -25,7 +27,8 @@ public class Player extends Slime {
             case REGULAR -> staminaUsage = sUsRegular;
             case SPRINT -> staminaUsage = sUsSprint;
         }
-        stamina += (staminaRegen - staminaUsage) * deltaTime.asSeconds();
+        final var usageMultiplier = 0.2f + Math.pow(Objects.requireNonNull(getWorld()).getDangerLevelPercentage(), 1 / 5f);
+        stamina += (staminaRegen - staminaUsage * usageMultiplier) * deltaTime.asSeconds();
         if (stamina > maxStamina) stamina = maxStamina;
         if (stamina < 0 && !restricted) restricted = true;
         if (stamina >= 10 && restricted) restricted = false;
