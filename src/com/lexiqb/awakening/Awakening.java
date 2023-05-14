@@ -78,6 +78,11 @@ public class Awakening extends Game {
     @Override
     protected void init() {
         getContext().setupWindow(1280, 720, "Awakening of the Rarely Observed Big Unidentified Sus Thing");
+        getContext().putResource("function.game.start", (Runnable) this::startGame);
+        startGame();
+    }
+
+    private void startGame() {
         final var player = new Player();
         getContext().getWindow().setHUD(new GameplayHUD());
         final var lobby = getContext().getAssetsBundle().<DataAsset>get("data.world.lobby").convertTo(WorldData.class).build();

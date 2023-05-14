@@ -1,12 +1,10 @@
 package com.lexiqb.awakening.world;
 
-import com.lexiqb.awakening.data.WorldData;
 import com.lexiqb.awakening.entities.*;
 import com.lexiqb.awakening.ui.GameSummaryHUD;
 import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.GameContext;
 import com.rubynaxela.kyanite.game.Scene;
-import com.rubynaxela.kyanite.game.assets.DataAsset;
 import com.rubynaxela.kyanite.game.assets.Sound;
 import com.rubynaxela.kyanite.graphics.*;
 import com.rubynaxela.kyanite.input.Keyboard;
@@ -81,23 +79,16 @@ public class World extends Scene {
         if (dangerLevel < 0f) dangerLevel = 0f;
 
         readjustView();
-
         stream().filter(o -> o instanceof Entity).forEach(e -> ((Entity) e).update(getDeltaTime()));
-
         succ();
+
         if (getContext().getWindow().getHUD() instanceof GameplayHUD) {
             getContext().getWindow().<GameplayHUD>getHUD().setStamina(player.getStaminaPercentage());
             getContext().getWindow().<GameplayHUD>getHUD().setNoise(dangerLevel / criticalLevel);
         }
-
         if (getContext().getWindow().getHUD() instanceof GameSummaryHUD) {
-            if (Keyboard.isKeyPressed(Keyboard.Key.RETURN)) {
-//                var newWorld = getContext().getAssetsBundle().<DataAsset>get("data.world.lobby").convertTo(WorldData.class).build();
-//                getContext().getWindow().setScene();
-                getContext().restartGame();
-            }
-            if (Keyboard.isKeyPressed(Keyboard.Key.ESCAPE))
-                getContext().getWindow().close();
+            if (Keyboard.isKeyPressed(Keyboard.Key.RETURN)) getContext().<Runnable>getResource("function.game.start").run();
+            else if (Keyboard.isKeyPressed(Keyboard.Key.ESCAPE)) getContext().getWindow().close();
         }
 
         updateOrder();

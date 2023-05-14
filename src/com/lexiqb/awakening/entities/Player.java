@@ -42,7 +42,7 @@ public class Player extends Slime {
         if (yellCooldown == 0) {
             if (Keyboard.isKeyPressed(Keyboard.Key.SPACE)) {
                 yellCooldown = betweenYells;
-                GameContext.getInstance().getAudioHandler().playSound(wakeSound, "player", 100.0f, 1.0f, false);
+                GameContext.getInstance().getAudioHandler().playSound(wakeSound, "player", 50.0f, 1.0f, false);
                 assert getWorld() != null;
                 getWorld().makeNoise(getPosition(), 75);
                 for (final Slime slam : getWorld().getSlimes())
