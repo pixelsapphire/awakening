@@ -27,7 +27,8 @@ public class Awakening extends Game {
 
         // ================================[ Textures ]================================
 
-        assets.register("texture.entity.player", new TextureAtlas("assets/textures/entity/slime_atlas.png"));
+        assets.register("texture.entity.slime", new TextureAtlas("assets/textures/entity/slime_atlas.png"));
+        assets.register("texture.entity.leech", new TextureAtlas("assets/textures/entity/leech_atlas.png"));
 
         assets.register("texture.ui.health", new Texture("assets/textures/ui/health.png"));
         assets.register("texture.ui.stamina", new Texture("assets/textures/ui/stamina.png"));
@@ -35,6 +36,10 @@ public class Awakening extends Game {
 
         assets.register("texture.world.gate", new Texture("assets/textures/world/gate.png"));
         assets.register("texture.world.gate_alt", new Texture("assets/textures/world/gate_alt.png"));
+
+        assets.register("texture.world.boulders.boulder1", new Texture("assets/textures/world/boulders/boulder1.png"));
+        assets.register("texture.world.boulders.boulder2", new Texture("assets/textures/world/boulders/boulder2.png"));
+        assets.register("texture.world.boulders.boulder3", new Texture("assets/textures/world/boulders/boulder3.png"));
 
         assets.register("texture.world.lobby.background", new Texture("assets/textures/world/touch_sum_grass.png"));
 

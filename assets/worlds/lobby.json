@@ -17,5 +17,17 @@
       "facing": "right",
       "destination": null
     }
+  ],
+  "decor": [
+    {
+      "x": 270,
+      "y": 380,
+      "type": "boulder"
+    },
+    {
+      "x": 900,
+      "y": 200,
+      "type": "boulder"
+    }
   ]
 }

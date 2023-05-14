@@ -1,9 +1,6 @@
 package com.lexiqb.awakening.world;
 
-import com.lexiqb.awakening.entities.Entity;
-import com.lexiqb.awakening.entities.Player;
-import com.lexiqb.awakening.entities.Shrensor;
-import com.lexiqb.awakening.entities.Slime;
+import com.lexiqb.awakening.entities.*;
 import com.lexiqb.awakening.ui.GameplayHUD;
 import com.rubynaxela.kyanite.game.Scene;
 import com.rubynaxela.kyanite.graphics.*;
@@ -16,13 +13,14 @@ import java.util.ArrayList;
 
 public class World extends Scene {
 
+    private static final float dissipationFactor = 1f, criticalLevel = 25f;
     private final Vector2i size;
     private final Window window;
+    private final ArrayList<Slime> slimes = new ArrayList<>();
+    private final ArrayList<Shrensor> shrensors = new ArrayList<>();
     private Player player;
-    private ArrayList<Slime> slimes = new ArrayList<>();
-    private ArrayList<Shrensor> shrensors = new ArrayList<>();
-    private final float dissipationFactor = 1f, criticalLevel = 25f;
     private float dangerLevel = 0f;
+    private Leech rarelyObservedUnidentifiedSusThing = new Leech();
 
     public World(@NotNull Vector2i size, @NotNull Texture background) {
         this(size.x, size.y, background);
@@ -48,24 +46,9 @@ public class World extends Scene {
         player.assignWorld(this);
     }
 
-    private void readjustView() {
-        final var playerPosition = player.getPosition();
-        final var windowSize = window.getSize();
-        final var offsetY = player.getGlobalBounds().height  / player.getScale().y / 3f;
-        final boolean followOnX = playerPosition.x > windowSize.x / 2f && playerPosition.x < size.x - windowSize.x / 2f;
-        final boolean followOnY = playerPosition.y > windowSize.y / 2f + offsetY && playerPosition.y < size.y - windowSize.y / 2f + offsetY;
-
-        final ConstView view = getContext().getWindow().getView();
-        final var playerCenter = player.getGlobalBounds().getCenter();
-        float viewCenterX = view.getCenter().x, viewCenterY = view.getCenter().y;
-        if (followOnX) viewCenterX = playerCenter.x;
-        if (followOnY) viewCenterY = playerCenter.y + player.getGlobalBounds().height / 2f - offsetY;
-        ((View) view).setCenter(Vec2.f(viewCenterX, viewCenterY));
-        getContext().getWindow().setView(view);
-    }
-
     @Override
     protected void init() {
+        add(rarelyObservedUnidentifiedSusThing);
         Shrensor testS = new Shrensor();
         testS.setPosition(600, 200);
         testS.assignWorld(this);
@@ -77,6 +60,7 @@ public class World extends Scene {
         slimes.add(slims);
         add(testS, slims);
 
+        rarelyObservedUnidentifiedSusThing.spawn(player.getPosition());
         updateOrder();
     }
 
@@ -91,7 +75,7 @@ public class World extends Scene {
 
         readjustView();
 
-        stream().filter(o->o instanceof Entity).forEach(e->((Entity) e).update(getDeltaTime()));
+        stream().filter(o -> o instanceof Entity).forEach(e -> ((Entity) e).update(getDeltaTime()));
 
         succ();
 
@@ -101,16 +85,20 @@ public class World extends Scene {
         updateOrder();
     }
 
-    public IntRect getBounds() {
-        return new IntRect(0, 0, size.x, size.y);
-    }
+    private void readjustView() {
+        final var playerPosition = player.getPosition();
+        final var windowSize = window.getSize();
+        final var offsetY = player.getGlobalBounds().height / player.getScale().y / 3f;
+        final boolean followOnX = playerPosition.x > windowSize.x / 2f && playerPosition.x < size.x - windowSize.x / 2f;
+        final boolean followOnY = playerPosition.y > windowSize.y / 2f + offsetY && playerPosition.y < size.y - windowSize.y / 2f + offsetY;
 
-    public void makeNoise(Vector2f position, float volume) {
-        // TODO calculate strength of noise, alert sensors
-        for (var s : shrensors) {
-            float distSqr = (MathUtils.pow((long) (s.getPosition().x - position.x), 2) + MathUtils.pow((long) (s.getPosition().y - position.y), 2)) / 10000f;
-            s.disturb(convertTodB(convertFromdB(volume) / (distSqr * dissipationFactor)));
-        }
+        final ConstView view = getContext().getWindow().getView();
+        final var playerCenter = player.getGlobalBounds().getCenter();
+        float viewCenterX = view.getCenter().x, viewCenterY = view.getCenter().y;
+        if (followOnX) viewCenterX = playerCenter.x;
+        if (followOnY) viewCenterY = playerCenter.y + player.getGlobalBounds().height / 2f - offsetY;
+        ((View) view).setCenter(Vec2.f(viewCenterX, viewCenterY));
+        getContext().getWindow().setView(view);
     }
 
     private void succ() {
@@ -120,22 +108,30 @@ public class World extends Scene {
                 for (var p : stream().filter(o -> o instanceof Portal).toList()) {
                     if (p instanceof Portal) {
                         if (s.getGlobalBounds().intersects(((Portal) p).getGlobalBounds())) {
-                            s.portal = (Portal)p;
+                            s.portal = (Portal) p;
                             s.inPortal = true;
                             break;
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 assert s.portal != null;
+                System.out.println("slime in portal");
                 // TODO animation that succ
             }
         }
     }
 
-    public void increaseDangerLevel(float value) {
-        dangerLevel += value;
+    public IntRect getBounds() {
+        return new IntRect(0, 0, size.x, size.y);
+    }
+
+    public void makeNoise(Vector2f position, @Unit("dB") float volume) {
+        // TODO calculate strength of noise, alert sensors
+        for (var s : shrensors) {
+            float distSqr = (MathUtils.pow((long) (s.getPosition().x - position.x), 2) + MathUtils.pow((long) (s.getPosition().y - position.y), 2)) / 10000f;
+            s.disturb(convertTodB(convertFromdB(volume) / (distSqr * dissipationFactor)));
+        }
     }
 
     public float convertTodB(@Unit("W/m^2") float value) {
@@ -143,7 +139,11 @@ public class World extends Scene {
     }
 
     public float convertFromdB(@Unit("dB") float value) {
-        return (float) Math.pow(10, (value/10f - 12));
+        return (float) Math.pow(10, (value / 10f - 12));
+    }
+
+    public void increaseDangerLevel(float value) {
+        dangerLevel += value;
     }
 
     public ArrayList<Slime> getSlimes() {

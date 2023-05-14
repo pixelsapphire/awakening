@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class Player extends Slime {
 
     private static final float maxStamina = 100, staminaRegen = 15, sUsSprint = 30, sUsRegular = 20, sUsSneak = 5, betweenYells = 2;
-    private float stamina = maxStamina, yellCd = 0f;
+    private float stamina = maxStamina, yellCooldown = 0f;
 
     public Player() {
         super(SizeClass.PRETTY_AVERAGE);
@@ -30,19 +30,16 @@ public class Player extends Slime {
         if (stamina < 0 && !restricted) restricted = true;
         if (stamina >= 10 && restricted) restricted = false;
 
-        if (yellCd > 0) yellCd -= deltaTime.asSeconds();
-        if (yellCd < 0) yellCd = 0;
-        if (yellCd == 0) {
+        if (yellCooldown > 0) yellCooldown -= deltaTime.asSeconds();
+        if (yellCooldown < 0) yellCooldown = 0;
+        if (yellCooldown == 0) {
             if (Keyboard.isKeyPressed(Keyboard.Key.SPACE)) {
-                yellCd = betweenYells;
+                yellCooldown = betweenYells;
                 /* TODO make some NOOOOOOOOOOISE */
                 assert getWorld() != null;
                 getWorld().makeNoise(getPosition(), 75);
-                for (final Slime slam : getWorld().getSlimes()) {
-                    if (MathUtils.distance(getPosition(), slam.getPosition()) < 100) {
-                        slam.awaken();
-                    }
-                }
+                for (final Slime slam : getWorld().getSlimes())
+                    if (MathUtils.distance(getPosition(), slam.getPosition()) < 100) slam.awaken();
             }
         }
 
@@ -60,10 +57,10 @@ public class Player extends Slime {
     protected void land() {
         super.land();
         float multiplier = 1.0f;
-        if (getMotion() == Motion.SPRINT) multiplier = 2.5f;
-        if (getMotion() == Motion.SNEAK) multiplier = 0.4f;
+        if (getMotion() == Motion.SPRINT) multiplier = 1.75f;
+        if (getMotion() == Motion.SNEAK) multiplier = 0.5f;
         assert getWorld() != null;
-        getWorld().makeNoise(getPosition(), (float) (50 + 10 * (multiplier + Math.log10(Math.pow(getSize().x / 32.0f, 3)))));
+        getWorld().makeNoise(getPosition(), (float) (60 + 10 * (multiplier * Math.log10(Math.pow(getSize().x / 32.0f, 3)))));
     }
 
     public float getStaminaPercentage() {

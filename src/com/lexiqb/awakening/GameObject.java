@@ -7,14 +7,14 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class GameObject extends RectangleShape implements HitBoxObject {
 
-    private FloatRect hitBox;
+    private FloatRect hitBox = null;
 
     @Override
     public @Nullable FloatRect getHitBox() {
-        return hitBox;
+        final var bounds = getGlobalBounds();
+        return new FloatRect(hitBox.left + bounds.left, hitBox.top + bounds.top, hitBox.width, hitBox.height);
     }
 
-    @Override
     public void setHitBox(@Nullable FloatRect hitBox) {
         this.hitBox = hitBox;
     }

@@ -9,12 +9,10 @@ import com.rubynaxela.kyanite.graphics.Colors;
 import com.rubynaxela.kyanite.graphics.Texture;
 import com.rubynaxela.kyanite.graphics.TextureAtlas;
 import com.rubynaxela.kyanite.input.Keyboard;
-import com.rubynaxela.kyanite.math.Direction;
-import com.rubynaxela.kyanite.math.MathUtils;
-import com.rubynaxela.kyanite.math.Vec2;
-import com.rubynaxela.kyanite.math.Vector2f;
+import com.rubynaxela.kyanite.math.*;
 import com.rubynaxela.kyanite.util.Time;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class Slime extends Entity {
 
@@ -23,16 +21,16 @@ public class Slime extends Entity {
     private static final Sound takeoffSound = assets.get("sound.entity.slime.takeoff");
     private static final Sound landingSound = assets.get("sound.entity.slime.land");
     private final float movementSpeed, loopLength;
-    private final Texture[][] animations = assets.<TextureAtlas>get("texture.entity.player").getMatrix(32, 32, 5, 4);
+    private final Texture[][] animations = assets.<TextureAtlas>get("texture.entity.slime").getMatrix(32, 32, 5, 4);
     private final float[] loopTimes = {0.05f, 0.1f, 0.2f, 0.25f, 0.3f, 0.4f, 0.65f, 0.75f, 0.8f, 0.85f, 0.95f, 1f};
     private final SizeClass sizeClass;
+    public boolean inPortal = false;
+    public Portal portal = null;
     protected boolean restricted = true;
     private float movementTime = 0;
     private Direction facing = Direction.NORTH;
     private Motion motion = Motion.IDLE;
     private boolean onGround = true;
-    public boolean inPortal = false;
-    public Portal portal = null;
 
     public Slime(@NotNull SizeClass sizeClass) {
 
@@ -53,6 +51,7 @@ public class Slime extends Entity {
     public void update(@NotNull Time deltaTime) {
         movement(deltaTime);
         keepInWorldBounds(deltaTime);
+        collideWithObstacles(deltaTime);
     }
 
     protected void movement(@NotNull Time deltaTime) {
@@ -127,42 +126,6 @@ public class Slime extends Entity {
         return Direction.NULL;
     }
 
-    private Direction determineDirection(Vector2f destination, float proximity) {
-        int deltaX = 0, deltaY = 0;
-        var delta = Vec2.subtract(destination, getPosition());
-        if (Math.abs(delta.x) > proximity) {
-            if (delta.x > 0) deltaX = 1;
-            else deltaX = -1;
-        }
-        if (Math.abs(delta.y) > proximity) {
-            if (delta.y > 0) deltaY = 1;
-            else deltaY = -1;
-        }
-        switch (deltaY) {
-            case 1 -> {
-                switch (deltaX) {
-                    case 1 -> { return Direction.SOUTH_EAST; }
-                    case -1 -> { return Direction.SOUTH_WEST; }
-                    default -> { return Direction.SOUTH; }
-                }
-            }
-            case -1 -> {
-                switch (deltaX) {
-                    case 1 -> { return Direction.NORTH_EAST; }
-                    case -1 -> { return Direction.NORTH_WEST; }
-                    default -> { return Direction.NORTH; }
-                }
-            }
-            default -> {
-                switch (deltaX) {
-                    case 1 -> { return Direction.EAST; }
-                    case -1 -> { return Direction.WEST; }
-                    default -> { return Direction.NULL; }
-                }
-            }
-        }
-    }
-
     protected int getAnimationFrame() {
         if ((movementTime >= loopLength * loopTimes[0] && movementTime < loopLength * loopTimes[1]) ||
             (movementTime >= loopLength * loopTimes[2] && movementTime < loopLength * loopTimes[3]) ||
@@ -185,17 +148,15 @@ public class Slime extends Entity {
     }
 
     protected void land() {
-        audioHandler.playSound(landingSound, "player", 100.0f, sizeClass.soundPitch, false);
-        // TODO partiiiiicleeeesssssss :DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+        audioHandler.playSound(landingSound, "player", motion.speedModifier / 2 * 100.0f, sizeClass.soundPitch, false);
     }
 
     protected void takeoff() {
-        audioHandler.playSound(takeoffSound, "player", 100.0f, sizeClass.soundPitch, false);
+        audioHandler.playSound(takeoffSound, "player", motion.speedModifier / 2 * 100.0f, sizeClass.soundPitch, false);
     }
 
     protected void resetMovementTime() {
-        if (movementTime < loopLength * loopTimes[4] || movementTime > loopLength * loopTimes[9])
-            movementTime = 0f;
+        if (movementTime < loopLength * loopTimes[4] || movementTime > loopLength * loopTimes[9]) movementTime = 0f;
         motion = Motion.IDLE;
     }
 
@@ -203,9 +164,45 @@ public class Slime extends Entity {
         return facing.ordinal() / 2;
     }
 
+    private Direction determineDirection(Vector2f destination, float proximity) {
+        int deltaX = 0, deltaY = 0;
+        var delta = Vec2.subtract(destination, getPosition());
+        if (Math.abs(delta.x) > proximity) {
+            if (delta.x > 0) deltaX = 1;
+            else deltaX = -1;
+        }
+        if (Math.abs(delta.y) > proximity) {
+            if (delta.y > 0) deltaY = 1;
+            else deltaY = -1;
+        }
+        return switch (deltaY) {
+            case 1 -> switch (deltaX) {
+                case 1 -> Direction.SOUTH_EAST;
+                case -1 -> Direction.SOUTH_WEST;
+                default -> Direction.SOUTH;
+            };
+            case -1 -> switch (deltaX) {
+                case 1 -> Direction.NORTH_EAST;
+                case -1 -> Direction.NORTH_WEST;
+                default -> Direction.NORTH;
+            };
+            default -> switch (deltaX) {
+                case 1 -> Direction.EAST;
+                case -1 -> Direction.WEST;
+                default -> Direction.NULL;
+            };
+        };
+    }
+
     public void awaken() {
         restricted = false;
         facing = Direction.SOUTH;
+    }
+
+    @Override
+    public @Nullable FloatRect getHitBox() {
+        final var bounds = getGlobalBounds();
+        return new FloatRect(bounds.left, bounds.top + bounds.height * 0.67f, bounds.width, bounds.height * 0.67f);
     }
 
     protected enum Motion {

@@ -1,6 +1,7 @@
 package com.lexiqb.awakening.entities;
 
 import com.lexiqb.awakening.GameObject;
+import com.lexiqb.awakening.world.Obstacle;
 import com.lexiqb.awakening.world.World;
 import com.rubynaxela.kyanite.game.entities.MovingEntity;
 import com.rubynaxela.kyanite.math.Vec2;
@@ -40,16 +41,6 @@ public abstract class Entity extends GameObject implements MovingEntity {
         currentHp = hp;
     }
 
-    @Override
-    public @NotNull Vector2f getVelocity() {
-        return velocity;
-    }
-
-    @Override
-    public void setVelocity(@NotNull Vector2f velocity) {
-        this.velocity = velocity;
-    }
-
     public @Nullable World getWorld() {
         return world;
     }
@@ -74,8 +65,8 @@ public abstract class Entity extends GameObject implements MovingEntity {
 
     protected void keepInWorldBounds(@NotNull Time deltaTime) {
         final var gGB = getGlobalBounds();
-        assert getWorld() != null;
-        final var worldBounds = getWorld().getBounds();
+        assert world != null;
+        final var worldBounds = world.getBounds();
         float vX = getVelocity().x, vY = getVelocity().y;
         // Horizontal map constraints
         if (vX < 0 && gGB.left + vX * deltaTime.asSeconds() < 0)
@@ -88,5 +79,21 @@ public abstract class Entity extends GameObject implements MovingEntity {
         else if (vY > 0 && gGB.bottom + vY * deltaTime.asSeconds() > worldBounds.height)
             vY = (worldBounds.height - gGB.bottom) / deltaTime.asSeconds();
         setVelocity(Vec2.f(vX, vY));
+    }
+
+    @Override
+    public @NotNull Vector2f getVelocity() {
+        return velocity;
+    }
+
+    @Override
+    public void setVelocity(@NotNull Vector2f velocity) {
+        this.velocity = velocity;
+    }
+
+    protected void collideWithObstacles(@NotNull Time deltaTime) {
+        assert world != null;
+        world.stream().filter(o -> o instanceof final Obstacle ob && ob.getHitBox() != null)
+             .forEach(o -> stopAtBarrier(((Obstacle) o).getHitBox(), deltaTime, true));
     }
 }
