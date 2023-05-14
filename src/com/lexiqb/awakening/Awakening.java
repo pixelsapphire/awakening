@@ -77,7 +77,7 @@ public class Awakening extends Game {
 
     @Override
     protected void init() {
-        getContext().setupWindow(1280, 720, "Awakening of the Rarely Observed Big Unidentified Sus Thing");
+        getContext().setupWindow(1280, 720, "Wish We Had Another Hour");
         getContext().putResource("function.game.start", (Runnable) this::startGame);
         startGame();
     }
