@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class World extends Scene {
 
-    private static final float dissipationFactor = 1f, criticalLevel = 25f;
+    private static final float dissipationFactor = 1f, criticalLevel = 25f, portalSuccTime = 2, portalSuccSpeed = 0.8f, disappearScale = 0.1f;
     private final Vector2i size;
     private final Window window;
     private final ArrayList<Slime> slimes = new ArrayList<>();
@@ -60,6 +60,8 @@ public class World extends Scene {
         slimes.add(slims);
         add(testS, slims);
 
+//        / (getContext().getWindow().getFramerateLimit() * succTime)
+
         rarelyObservedUnidentifiedSusThing.spawn(player.getPosition());
         updateOrder();
     }
@@ -102,7 +104,8 @@ public class World extends Scene {
     }
 
     private void succ() {
-        boolean allSafe = slimes.size() == 0;
+        boolean allSafe = true;
+        int remainingBois = 0;
         ArrayList<Slime> toRemove = new ArrayList<>();
         for (var s : slimes) {
             if (!s.inPortal) {
@@ -116,17 +119,14 @@ public class World extends Scene {
                         }
                     }
                 }
+                remainingBois++;
+                allSafe = false;
             } else {
                 assert s.portal != null;
-                System.out.println("slime in portal"); // Well, yes
-                // TODO animation that succ
-//                s.setScale(Vec2.multiply(s.getScale(), 0.6 * getDeltaTime().asSeconds()));
-                // s.setScale(Vec2.multiply(s.getScale(), 0.9962f));
-                s.scale(0.981f);
-                s.move(Vec2.multiply(Vec2.subtract(Vec2.add(s.portal.getGlobalBounds().getCenter(), Vec2.multiply(s.portal.getSize(), 0.1f)), s.getGlobalBounds().getCenter()), 0.6 * getDeltaTime().asSeconds()));  // huh?
+                s.scale((float) Math.exp(Math.log(disappearScale) * getDeltaTime().asSeconds() / portalSuccTime));
+                s.move(Vec2.multiply(Vec2.subtract(Vec2.add(s.portal.getGlobalBounds().getCenter(), Vec2.multiply(s.portal.getSize(), 0.1f)), s.getGlobalBounds().getCenter()), portalSuccSpeed * getDeltaTime().asSeconds()));
                 if (s.getScale().x < 0.1) {
-                    System.out.println("WAAAAAAAAAAAAGH");
-                    toRemove.add(s); // TODO change this so it doesn't bonjour
+                    toRemove.add(s);
                     scheduleToRemove(s);
                 }
             }
@@ -148,11 +148,8 @@ public class World extends Scene {
                 }
             } else {
                 assert getPlayer().portal != null;
-                // TODO animation that succ player
-//                getPlayer().setScale(Vec2.multiply(getPlayer().getScale(), 0.6 * getDeltaTime().asSeconds()));
-//                getPlayer().setScale(Vec2.multiply(getPlayer().getScale(), 0.9915f));
-                getPlayer().scale(0.981f);
-                getPlayer().move(Vec2.multiply(Vec2.subtract(Vec2.add(getPlayer().portal.getGlobalBounds().getCenter(), Vec2.multiply(getPlayer().portal.getSize(), 0.1f)), getPlayer().getGlobalBounds().getCenter()), 0.6 * getDeltaTime().asSeconds()));  // huh?
+                getPlayer().scale((float) Math.exp(Math.log(disappearScale) * getDeltaTime().asSeconds() / portalSuccTime));
+                getPlayer().move(Vec2.multiply(Vec2.subtract(Vec2.add(getPlayer().portal.getGlobalBounds().getCenter(), Vec2.multiply(getPlayer().portal.getSize(), 0.1f)), getPlayer().getGlobalBounds().getCenter()), portalSuccSpeed * getDeltaTime().asSeconds()));  // huh?
 
                 if (getPlayer().getScale().x < 0.1) {
                     getContext().getWindow().close(); // TODO change this to transport to new map / make another HUD appear
@@ -166,7 +163,6 @@ public class World extends Scene {
     }
 
     public void makeNoise(Vector2f position, @Unit("dB") float volume) {
-        // TODO calculate strength of noise, alert sensors
         for (var s : shrensors) {
             float distSqr = (MathUtils.pow((long) (s.getPosition().x - position.x), 2) + MathUtils.pow((long) (s.getPosition().y - position.y), 2)) / 10000f;
             s.disturb(convertTodB(convertFromdB(volume) / (distSqr * dissipationFactor)));
