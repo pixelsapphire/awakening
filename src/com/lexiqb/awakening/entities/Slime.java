@@ -98,7 +98,7 @@ public class Slime extends Entity {
             else setVelocity(Vector2f.zero());
         }
 
-        if (!(this instanceof Player)) {
+        if (!(this instanceof Player) && movementEnabled) {
             if (motion == Motion.SNEAK) setScale(1f, 0.75f);
             else setScale(1f);
         }

@@ -2,7 +2,9 @@ package com.lexiqb.awakening.world;
 
 import com.lexiqb.awakening.entities.*;
 import com.lexiqb.awakening.ui.GameplayHUD;
+import com.rubynaxela.kyanite.game.GameContext;
 import com.rubynaxela.kyanite.game.Scene;
+import com.rubynaxela.kyanite.game.assets.Sound;
 import com.rubynaxela.kyanite.graphics.*;
 import com.rubynaxela.kyanite.math.*;
 import com.rubynaxela.kyanite.util.Unit;
@@ -13,7 +15,9 @@ import java.util.ArrayList;
 
 public class World extends Scene {
 
-    private static final float dissipationFactor = 1f, criticalLevel = 25f, portalSuccTime = 2, portalSuccSpeed = 0.8f, disappearScale = 0.1f;
+    private static final Sound portalSound = GameContext.getInstance().getAssetsBundle().get("sound.world.portal.enter");
+    private static final float dissipationFactor = 1f, criticalLevel = 25f, portalSuccTime = 8, portalSuccSpeed = 0.8f, disappearScale = 0.1f;
+    private static boolean gameOver = false;
     private final Vector2i size;
     private final Window window;
     private final ArrayList<Slime> slimes = new ArrayList<>();
@@ -62,7 +66,11 @@ public class World extends Scene {
 
     @Override
     protected void loop() {
-        if (dangerLevel > criticalLevel) rarelyObservedUnidentifiedSusThing.eat(player);
+
+        if (!gameOver && dangerLevel > criticalLevel) {
+            gameOver = true;
+            rarelyObservedUnidentifiedSusThing.eat(player);
+        }
         dangerLevel -= 0.5f * getDeltaTime().asSeconds();
         if (dangerLevel < 0f) dangerLevel = 0f;
 
@@ -130,6 +138,7 @@ public class World extends Scene {
                         getPlayer().inPortal = true;
                         getPlayer().disableMovement();
                         getPlayer().setLayer(2);
+                        portalSound.play();
                         break;
                     }
                 }
