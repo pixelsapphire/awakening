@@ -98,6 +98,11 @@ public class Slime extends Entity {
             else setVelocity(Vector2f.zero());
         }
 
+        if (!(this instanceof Player)) {
+            if (motion == Motion.SNEAK) setScale(1f, 0.75f);
+            else setScale(1f);
+        }
+
         // Setting texture
         final Direction facingNow = switch (direction) {
             case NORTH -> Direction.NORTH;
@@ -152,6 +157,11 @@ public class Slime extends Entity {
 
     protected void land() {
         audioHandler.playSound(landingSound, "player", motion.speedModifier / 2 * 100.0f, sizeClass.soundPitch, false);
+        float multiplier = 1.0f;
+        if (getMotion() == Motion.SPRINT) multiplier = 1.75f;
+        if (getMotion() == Motion.SNEAK) multiplier = 0.5f;
+        assert getWorld() != null;
+        getWorld().makeNoise(getPosition(), (float) (60 + 10 * (multiplier * Math.log10(Math.pow(getSize().x / 32.0f, 3)))));
     }
 
     protected void takeoff() {

@@ -55,16 +55,6 @@ public class Player extends Slime {
         return Keyboard.getDirection(Keyboard.StandardControls.WASD);
     }
 
-    @Override
-    protected void land() {
-        super.land();
-        float multiplier = 1.0f;
-        if (getMotion() == Motion.SPRINT) multiplier = 1.75f;
-        if (getMotion() == Motion.SNEAK) multiplier = 0.5f;
-        assert getWorld() != null;
-        getWorld().makeNoise(getPosition(), (float) (60 + 10 * (multiplier * Math.log10(Math.pow(getSize().x / 32.0f, 3)))));
-    }
-
     public float getStaminaPercentage() {
         return Math.max(stamina / maxStamina, 0);
     }
