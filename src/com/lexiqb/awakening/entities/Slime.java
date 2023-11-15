@@ -33,7 +33,6 @@ public class Slime extends Entity {
     private boolean onGround = true;
 
     public Slime(@NotNull SizeClass sizeClass) {
-
         this.sizeClass = sizeClass;
         movementSpeed = sizeClass.movementSpeed;
         loopLength = sizeClass.loopLength;
